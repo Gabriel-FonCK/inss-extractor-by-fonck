@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bem-vindo · INSS Extractor by FonCK</title>
+  <link rel="icon" type="image/png" href="../icons/icon48.png">
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --surface-2: #edf0f5;
+      --ink: #101218;
+      --muted: #555b69;
+      --subtle: #7c8394;
+      --line: rgba(16, 18, 24, 0.1);
+      --line-strong: rgba(16, 18, 24, 0.2);
+      --accent: #2456d6;
+      --accent-btn: #2456d6;
+      --accent-btn-hover: #1d47b8;
+      --accent-soft: rgba(36, 86, 214, 0.09);
+      --pri-bg: #101218;
+      --pri-fg: #f6f7f9;
+      --pri-hover: #252936;
+      --inv-bg: #101218;
+      --inv-surface: #181c26;
+      --inv-line: rgba(255, 255, 255, 0.1);
+      --inv-ink: #f4f5f8;
+      --inv-muted: #9fa6b8;
+      --ok: #15803d;
+      --ok-bg: #eaf8ef;
+      --shadow: 0 24px 56px -28px rgba(16, 18, 24, 0.14);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    html[data-theme="dark"] {
+      --bg: #0a0b0f;
+      --surface: #12141b;
+      --surface-2: #1a1d27;
+      --ink: #f3f5fa;
+      --muted: #9ca3b5;
+      --subtle: #6f7688;
+      --line: rgba(243, 245, 250, 0.09);
+      --line-strong: rgba(243, 245, 250, 0.2);
+      --accent: #5e8bff;
+      --accent-btn: #2558e0;
+      --accent-btn-hover: #3567eb;
+      --accent-soft: rgba(94, 139, 255, 0.14);
+      --pri-bg: #f3f5fa;
+      --pri-fg: #0a0b0f;
+      --pri-hover: #dde3f0;
+      --inv-bg: #131620;
+      --inv-surface: #1b202e;
+      --inv-line: rgba(243, 245, 250, 0.1);
+      --inv-ink: #f3f5fa;
+      --inv-muted: #9ca3b5;
+      --ok: #4ade80;
+      --ok-bg: rgba(34, 197, 94, 0.14);
+      --shadow: 0 28px 70px -24px rgba(0, 0, 0, 0.65);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .ico { width: 16px; height: 16px; flex: none; display: inline-block; }
+
+    /* Sticky Minimalist Header */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      height: 64px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner {
+      max-width: 1060px;
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+    .brand img {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      display: block;
+    }
+    .brand strong {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--ok-bg);
+      color: var(--ok);
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .top-actions { display: flex; align-items: center; gap: 8px; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 42px;
+      padding: 0 18px;
+      border-radius: 8px;
+      border: 1px solid var(--pri-bg);
+      background: var(--pri-bg);
+      color: var(--pri-fg);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 150ms var(--ease), transform 150ms var(--ease), border-color 150ms var(--ease);
+    }
+    .btn:hover { background: var(--pri-hover); transform: translateY(-1px); }
+    .btn:active { transform: translateY(1px) scale(0.985); }
+    .btn--sec {
+      background: transparent;
+      color: var(--ink);
+      border-color: var(--line-strong);
+    }
+    .btn--sec:hover { background: var(--surface-2); border-color: var(--ink); }
+    .btn--accent {
+      background: var(--accent-btn);
+      border-color: var(--accent-btn);
+      color: #ffffff;
+    }
+    .btn--accent:hover { background: var(--accent-btn-hover); border-color: var(--accent-btn-hover); }
+    .btn--sm { height: 36px; padding: 0 13px; font-size: 13px; }
+
+    /* Main Container */
+    .wrap {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 40px 24px 56px;
+      display: grid;
+      gap: 28px;
+    }
+
+    /* Onboarding Hero Split */
+    .hero-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 36px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 36px;
+      align-items: center;
+    }
+    html[data-theme="dark"] .hero-card {
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow);
+    }
+    .hero-left { display: grid; gap: 16px; align-content: start; }
+    .app-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .app-badge img {
+      width: 52px;
+      height: 52px;
+      border-radius: 13px;
+      box-shadow: 0 10px 24px -10px rgba(36, 86, 214, 0.55);
+    }
+    .app-badge span {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+    .app-badge b { color: var(--ink); display: block; font-size: 14px; }
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 3.2vw, 38px);
+      font-weight: 600;
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+    }
+    .lead { margin: 0; color: var(--muted); font-size: 15.5px; max-width: 48ch; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+
+    /* Interactive Checklist */
+    .checklist {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px;
+      display: grid;
+      gap: 10px;
+    }
+    .checklist-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chk-step {
+      width: 100%;
+      text-align: left;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 13px;
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 11px;
+      align-items: start;
+      cursor: pointer;
+      transition: border-color 150ms var(--ease), background 150ms var(--ease);
+    }
+    .chk-step:hover { border-color: var(--line-strong); }
+    .chk-box {
+      width: 20px;
+      height: 20px;
+      border-radius: 6px;
+      border: 1.5px solid var(--line-strong);
+      display: grid;
+      place-items: center;
+      margin-top: 1px;
+      color: transparent;
+      transition: background 150ms var(--ease), border-color 150ms var(--ease), color 150ms var(--ease);
+    }
+    .chk-step.done .chk-box {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+    .chk-step strong { display: block; font-size: 13.8px; font-weight: 600; color: var(--ink); }
+    .chk-step.done strong { text-decoration: line-through; color: var(--muted); }
+    .chk-step small { display: block; font-size: 12.2px; color: var(--muted); margin-top: 2px; }
+    code {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 11.8px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: var(--surface-2);
+      color: var(--ink);
+    }
+
+    /* 3-Column Scannable Feature Strip */
+    .feat-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .feat {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px 22px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+    }
+    .feat-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      display: grid;
+      place-items: center;
+      margin-bottom: 2px;
+    }
+    .feat b { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+    .feat p { margin: 0; font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+
+    /* Bottom 2-Column Row: Consulting + NG.CASH Pix */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 20px;
+      align-items: stretch;
+    }
+    .consult-box {
+      background: var(--inv-bg);
+      color: var(--inv-ink);
+      border: 1px solid var(--inv-line);
+      border-radius: 16px;
+      padding: 28px 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .consult-box h2 {
+      margin: 0;
+      font-size: 23px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: var(--inv-ink);
+    }
+    .consult-box p { margin: 8px 0 0; font-size: 14.2px; color: var(--inv-muted); }
+    .consult-box .btn--sec { color: var(--inv-ink); border-color: var(--inv-line); }
+    .consult-box .btn--sec:hover { background: var(--inv-surface); border-color: var(--inv-ink); }
+
+    .pix-box {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px 26px;
+      display: grid;
+      grid-template-columns: 128px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+    .qr-wrap {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 8px;
+    }
+    .qr-wrap img { width: 100%; height: auto; display: block; border-radius: 6px; }
+    .pix-info { display: grid; gap: 8px; }
+    .pix-info h3 { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+    .pix-info p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.48; }
+    .pix-key {
+      font-family: ui-monospace, Consolas, monospace;
+      font-size: 12.5px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      background: var(--bg);
+      border: 1px dashed var(--line-strong);
+      color: var(--ink);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .ico-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ico-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 34px;
+      padding: 0 11px;
+      border-radius: 7px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 12.5px;
+      font-weight: 500;
+      transition: border-color 140ms var(--ease), background 140ms var(--ease);
+    }
+    .ico-pill:hover { border-color: var(--ink); background: var(--surface-2); }
+
+    @media (max-width: 860px) {
+      .hero-card, .feat-strip, .bottom-grid { grid-template-columns: 1fr; }
+      .hero-card { padding: 24px; }
+    }
+    @media (max-width: 520px) {
+      .pix-box { grid-template-columns: 1fr; }
+      .qr-wrap { max-width: 164px; }
+      .status-pill { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img src="../icons/icon48.png" alt="INSS Extractor by FonCK">
+        <strong>INSS Extractor by FonCK</strong>
+        <span class="status-pill"><span class="status-dot"></span>Ativa · v2.4.1</span>
+      </div>
+      <div class="top-actions">
+        <button id="btn-theme" class="btn btn--sec btn--sm" type="button">☾ Escuro</button>
+        <a class="btn btn--sm" href="https://meu.inss.gov.br/" target="_blank" rel="noopener">Abrir Meu INSS</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Hero + Interactive Quick-Start Checklist -->
+    <section class="hero-card">
+      <div class="hero-left">
+        <div class="app-badge">
+          <img src="../icons/icon128.png" alt="">
+          <span><b>Instalação concluída</b>Open source (MIT) · 100% local e gratuito</span>
+        </div>
+        <h1>Pronto para extrair contratos e extratos do Meu INSS.</h1>
+        <p class="lead">
+          Sua extensão já está ativa no navegador. Faça login no Meu INSS normalmente e baixe tudo organizado em <code>Downloads/Contratos INSS/</code>, sem coletar senhas.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn--accent" href="https://meu.inss.gov.br/" target="_blank" rel="noopener">
+            Abrir Meu INSS agora
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          </a>
+          <a id="lnk-site" class="btn btn--sec" href="#" target="_blank" rel="noopener">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Tutorial visual no site
+          </a>
+        </div>
+      </div>
+
+      <div class="checklist" aria-label="Checklist rápido de 3 passos">
+        <div class="checklist-title">
+          <span>Primeiros 3 passos</span>
+          <span id="chk-count">0 de 3</span>
+        </div>
+
+        <button class="chk-step" type="button" data-chk="0">
+          <span class="chk-box" aria-hidden="true">✓</span>
+          <div>
+            <strong>1. Desative "Perguntar onde salvar"</strong>
+            <small>Em <code>chrome://settings/downloads</code> (evita janelas a cada PDF).</small>
+          </div>
+        </button>
+
+        <button class="chk-step" type="button" data-chk="1">
+          <span class="chk-box" aria-hidden="true">✓</span>
+          <div>
+            <strong>2. Entre no Meu INSS e abra o benefício</strong>
+            <small>O número do benefício (NB) é detectado sozinho na página.</small>
+          </div>
+        </button>
+
+        <button class="chk-step" type="button" data-chk="2">
+          <span class="chk-box" aria-hidden="true">✓</span>
+          <div>
+            <strong>3. Clique no botão flutuante e extraia</strong>
+            <small>Contratos, RMC/RCC e HISCRE completo desde 06/1994 em 1 clique.</small>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- Scannable 3-Column Capabilities -->
+    <section class="feat-strip" aria-label="Principais recursos">
+      <article class="feat">
+        <span class="feat-ico" aria-hidden="true">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
+        </span>
+        <b>Contratos já renomeados</b>
+        <p>Salvos no padrão <code>01Jan21 - GABRIEL FONSECA BANCO - 0000102030.pdf</code> com Documento Oficial e Biometria.</p>
+      </article>
+
+      <article class="feat">
+        <span class="feat-ico" aria-hidden="true">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        </span>
+        <b>RMC, RCC e Pendentes</b>
+        <p>Separa Empréstimos, Cartão RMC e RCC com planilha Excel e gera <code>CONTRATOS-PENDENTES.txt</code> com os bancos sem cópia.</p>
+      </article>
+
+      <article class="feat">
+        <span class="feat-ico" aria-hidden="true">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+        </span>
+        <b>HISCRE desde 06/1994</b>
+        <p>Sem limite de 5 anos. Pula períodos sem crédito, salva de 12 em 12 meses + PDF único + CSV por rubrica.</p>
+      </article>
+    </section>
+
+    <!-- Closing Split: Consultoria + Real NG.CASH Pix -->
+    <section class="bottom-grid">
+      <div class="consult-box">
+        <div>
+          <span style="font-size:12px;font-weight:600;color:#8baeff;letter-spacing:0.06em;text-transform:uppercase">Consultoria · Gestão &amp; IA</span>
+          <h2 style="margin-top:8px">Quer ferramentas e agentes de IA sob medida para o seu escritório?</h2>
+          <p>Desenvolvimento de extensões, automações com Claude/ChatGPT e consultoria em Gestão &amp; IA com <b>Gabriel Fonseca (FonCK)</b>.</p>
+        </div>
+        <div class="cta-row">
+          <a id="lnk-whats" class="btn btn--accent" href="#" target="_blank" rel="noopener">
+            <svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.03 2C6.51 2 2.04 6.47 2.04 11.98c0 1.76.46 3.48 1.34 5L2 22l5.15-1.35a9.95 9.95 0 0 0 4.88 1.27h.01c5.51 0 9.99-4.47 9.99-9.98A9.98 9.98 0 0 0 12.03 2Zm5.82 14.12c-.25.7-1.43 1.34-1.99 1.42-.51.08-1.16.11-1.88-.12-.44-.14-1-.33-1.72-.64-3.02-1.3-4.99-4.35-5.14-4.55-.15-.2-1.23-1.63-1.23-3.11 0-1.48.78-2.21 1.05-2.51.28-.3.6-.38.8-.38h.58c.19 0 .44-.07.68.52.25.6.85 2.08.93 2.23.07.15.12.33.02.53-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.15.15-.3.31-.13.61.18.3.78 1.29 1.68 2.09 1.15 1.03 2.13 1.35 2.43 1.5.3.15.48.12.65-.08.18-.2.75-.87.95-1.17.2-.3.4-.25.67-.15.28.1 1.76.83 2.06.98.3.15.5.22.58.35.07.12.07.72-.18 1.42Z"/></svg>
+            WhatsApp
+          </a>
+          <a id="lnk-linkedin" class="btn btn--sec" href="#" target="_blank" rel="noopener">
+            <svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77Z"/></svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+
+      <div class="pix-box">
+        <div class="qr-wrap">
+          <img src="pix-ngcash.png" alt="QR Code Pix NG.CASH @gabriel.fonck">
+        </div>
+        <div class="pix-info">
+          <h3>Apoie via Pix</h3>
+          <p>Ferramenta 100% gratuita. Escaneie o QR NG.CASH (<b>@gabriel.fonck</b>) ou copie a chave celular:</p>
+          <div class="pix-key">+55 21 96484-2518</div>
+          <button id="btn-copy-pix" class="btn btn--sm" type="button">Copiar chave Pix</button>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span><b>INSS Extractor by FonCK</b> · Gabriel Fonseca · Licença MIT</span>
+      <div class="ico-links">
+        <a id="ft-site" class="ico-pill" href="#" target="_blank" rel="noopener" title="Site Oficial">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Site
+        </a>
+        <a id="ft-github" class="ico-pill" href="#" target="_blank" rel="noopener" title="GitHub">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+          GitHub
+        </a>
+        <a id="ft-linkedin" class="ico-pill" href="#" target="_blank" rel="noopener" title="LinkedIn">
+          <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          LinkedIn
+        </a>
+        <a id="ft-whats" class="ico-pill" href="#" target="_blank" rel="noopener" title="WhatsApp">
+          <svg class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.03 2C6.51 2 2.04 6.47 2.04 11.98c0 1.76.46 3.48 1.34 5L2 22l5.15-1.35a9.95 9.95 0 0 0 4.88 1.27h.01c5.51 0 9.99-4.47 9.99-9.98A9.98 9.98 0 0 0 12.03 2Zm5.82 14.12c-.25.7-1.43 1.34-1.99 1.42-.51.08-1.16.11-1.88-.12-.44-.14-1-.33-1.72-.64-3.02-1.3-4.99-4.35-5.14-4.55-.15-.2-1.23-1.63-1.23-3.11 0-1.48.78-2.21 1.05-2.51.28-.3.6-.38.8-.38h.58c.19 0 .44-.07.68.52.25.6.85 2.08.93 2.23.07.15.12.33.02.53-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.15.15-.3.31-.13.61.18.3.78 1.29 1.68 2.09 1.15 1.03 2.13 1.35 2.43 1.5.3.15.48.12.65-.08.18-.2.75-.87.95-1.17.2-.3.4-.25.67-.15.28.1 1.76.83 2.06.98.3.15.5.22.58.35.07.12.07.72-.18 1.42Z"/></svg>
+          WhatsApp
+        </a>
+      </div>
+    </footer>
+  </main>
+
+  <script src="../config.js"></script>
+  <script src="welcome.js"></script>
+</body>
+</html>
