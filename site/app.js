@@ -212,12 +212,18 @@ function applySimFinalState() {
   simRunning = false;
 }
 
-function runInteractiveSimulation(startIdx = 0) {
+function runInteractiveSimulation(startIdx = 0, userTriggered = false) {
   clearSimTimers();
   activateHeroTab('hero-tab-contratos');
 
   if (prefersReducedMotion) {
     applySimFinalState();
+    if (userTriggered) {
+      showToast({
+        title: 'Simulação concluída',
+        detail: '3 contratos renomeados + 2 planilhas CSV separados.'
+      });
+    }
     return;
   }
 
@@ -289,6 +295,12 @@ function runInteractiveSimulation(startIdx = 0) {
                   '<path d="M21 12a9 9 0 1 1-2.64-6.36" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polyline points="21 3 21 9 15 9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
               }
               if (btnFabSim) btnFabSim.classList.add('is-pulsing');
+              if (userTriggered) {
+                showToast({
+                  title: 'Lote simulado com sucesso',
+                  detail: '3 PDFs renomeados + 2 planilhas CSV PT-BR prontos.'
+                });
+              }
             }, 680)
           );
         }
@@ -298,16 +310,16 @@ function runInteractiveSimulation(startIdx = 0) {
 }
 
 if (btnRunSim) {
-  btnRunSim.addEventListener('click', () => runInteractiveSimulation(0));
+  btnRunSim.addEventListener('click', () => runInteractiveSimulation(0, true));
 }
 if (btnFabSim) {
   btnFabSim.classList.add('is-pulsing');
-  btnFabSim.addEventListener('click', () => runInteractiveSimulation(0));
+  btnFabSim.addEventListener('click', () => runInteractiveSimulation(0, true));
 }
 simRows.forEach((row) => {
   row.addEventListener('click', () => {
     const idx = Number(row.getAttribute('data-sim-row')) || 0;
-    runInteractiveSimulation(idx);
+    runInteractiveSimulation(idx, true);
   });
 });
 
@@ -824,7 +836,8 @@ renderMitPrompt();
 const progressBar = document.getElementById('scroll-progress');
 const heroFrame = document.getElementById('hero-app-frame');
 const navLinks = Array.from(document.querySelectorAll('.nav-link'));
-const trackedSections = ['tutoriais', 'ia', 'personalizar', 'seguranca', 'consultoria']
+const navEl = document.querySelector('.nav');
+const trackedSections = ['tutoriais', 'impacto', 'ia', 'personalizar', 'seguranca', 'consultoria']
   .map((id) => ({ id, el: document.getElementById(id) }))
   .filter((item) => item.el);
 const scrollStatement = document.querySelector('[data-scroll-words]');
@@ -857,7 +870,8 @@ function onScrollFrame() {
   const scrollY = window.scrollY || window.pageYOffset || 0;
   const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
 
-  // 1. Reading progress hairline
+  // 1. Reading progress hairline & dynamic navbar elevation
+  if (navEl) navEl.classList.toggle('is-scrolled', scrollY > 18);
   if (progressBar) {
     progressBar.style.transform = `scaleX(${Math.min(1, Math.max(0, scrollY / maxScroll))})`;
   }
@@ -952,13 +966,76 @@ if (aiGroup) {
   });
 }
 
-function bindCopyButton(buttonEl, getText, defaultText) {
+// ── 11. Tactile Sonner-Style Toast Stack (transitions.dev #22 & #10) ─────────
+const toastStack = document.getElementById('toast-stack');
+
+function showToast({ title, detail = '', actionLabel = '', onAction = null, duration = 3800 }) {
+  if (!toastStack) return;
+  const el = document.createElement('div');
+  el.className = 't-toast';
+  el.innerHTML = `
+    <span class="t-toast-check" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg>
+    </span>
+    <div class="t-toast-body">
+      <strong>${title}</strong>
+      ${detail ? `<span>${detail}</span>` : ''}
+    </div>
+    ${actionLabel ? `<button class="t-toast-act" type="button">${actionLabel}</button>` : ''}
+  `;
+
+  if (actionLabel && typeof onAction === 'function') {
+    const actBtn = el.querySelector('.t-toast-act');
+    if (actBtn) {
+      actBtn.addEventListener('click', () => {
+        onAction();
+        dismiss();
+      });
+    }
+  }
+
+  // Keep at most 2 visible toasts
+  while (toastStack.children.length >= 2) {
+    toastStack.firstElementChild.remove();
+  }
+  toastStack.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('is-open'));
+
+  let closed = false;
+  const dismiss = () => {
+    if (closed) return;
+    closed = true;
+    el.classList.remove('is-open');
+    setTimeout(() => el.remove(), 280);
+  };
+  setTimeout(dismiss, duration);
+}
+
+// Post-download onboarding toast
+document.querySelectorAll('[data-dl-ext]').forEach((lnk) => {
+  lnk.addEventListener('click', () => {
+    showToast({
+      title: 'Download iniciado · v2.2.0 (.zip)',
+      detail: 'Extraia a pasta e siga os slides de instalação em 1 minuto.',
+      actionLabel: 'Ver slides →',
+      duration: 5200,
+      onAction: () => {
+        selectTutorialDeck('instalar', 0);
+        const sec = document.getElementById('tutoriais');
+        if (sec) sec.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+      }
+    });
+  });
+});
+
+function bindCopyButton(buttonEl, getText, defaultText, toastTitle, toastDetail) {
   if (!buttonEl) return;
   const span = buttonEl.querySelector('span') || buttonEl;
   buttonEl.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(getText());
       span.textContent = 'Copiado ✓';
+      showToast({ title: toastTitle, detail: toastDetail });
       setTimeout(() => {
         span.textContent = defaultText;
       }, 1900);
@@ -971,6 +1048,327 @@ function bindCopyButton(buttonEl, getText, defaultText) {
   });
 }
 
-bindCopyButton(document.getElementById('btn-copy-ai'), () => aiPrompts[activeAi], 'Copiar instruções');
-bindCopyButton(document.getElementById('btn-copy-mit'), () => currentMitPrompt, 'Copiar prompt para IA');
-bindCopyButton(document.getElementById('btn-copy-pix-key'), () => PIX_KEY, 'Copiar chave Pix');
+bindCopyButton(
+  document.getElementById('btn-copy-ai'),
+  () => aiPrompts[activeAi],
+  'Copiar instruções',
+  'Instruções de IA copiadas',
+  'Cole no Claude ou ChatGPT com o Meu INSS aberto.'
+);
+bindCopyButton(
+  document.getElementById('btn-copy-mit'),
+  () => currentMitPrompt,
+  'Copiar prompt para IA',
+  'Prompt MIT personalizado copiado',
+  'Cole no Claude, ChatGPT ou Cursor com a pasta extension/.'
+);
+bindCopyButton(
+  document.getElementById('btn-copy-pix-key'),
+  () => PIX_KEY,
+  'Copiar chave Pix',
+  'Chave Pix copiada',
+  '+55 21 96484-2518 · Gabriel Fonseca (NG.CASH)'
+);
+
+// ── 12. Interactive Before/After Drag Curtain + Office ROI Calculator ────────
+const curtainStage = document.getElementById('compare-curtain');
+const curtainHandle = document.getElementById('curtain-handle');
+const curtainChips = Array.from(document.querySelectorAll('[data-curtain-to]'));
+let curtainPct = 52;
+
+function setCurtain(pct, animate = false) {
+  curtainPct = Math.max(8, Math.min(92, pct));
+  if (!curtainStage) return;
+  curtainStage.classList.toggle('is-gliding', animate && !prefersReducedMotion);
+  curtainStage.style.setProperty('--split', `${curtainPct.toFixed(1)}%`);
+  if (curtainHandle) curtainHandle.setAttribute('aria-valuenow', String(Math.round(curtainPct)));
+  curtainChips.forEach((chip) => {
+    const target = Number(chip.getAttribute('data-curtain-to')) || 52;
+    chip.classList.toggle('is-active', Math.abs(target - curtainPct) < 12);
+  });
+}
+
+if (curtainStage) {
+  let dragging = false;
+  const updateFromClientX = (clientX) => {
+    const rect = curtainStage.getBoundingClientRect();
+    const pct = ((clientX - rect.left) / Math.max(1, rect.width)) * 100;
+    setCurtain(pct, false);
+  };
+  curtainStage.addEventListener('pointerdown', (e) => {
+    dragging = true;
+    curtainStage.classList.add('is-dragging');
+    curtainStage.classList.remove('is-gliding');
+    try { curtainStage.setPointerCapture(e.pointerId); } catch {}
+    updateFromClientX(e.clientX);
+  });
+  curtainStage.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    updateFromClientX(e.clientX);
+  });
+  const endDrag = () => {
+    if (!dragging) return;
+    dragging = false;
+    curtainStage.classList.remove('is-dragging');
+  };
+  curtainStage.addEventListener('pointerup', endDrag);
+  curtainStage.addEventListener('pointercancel', endDrag);
+}
+
+if (curtainHandle) {
+  curtainHandle.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); setCurtain(curtainPct - 6, true); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); setCurtain(curtainPct + 6, true); }
+  });
+}
+
+curtainChips.forEach((chip) => {
+  chip.addEventListener('click', () => {
+    const target = Number(chip.getAttribute('data-curtain-to')) || 52;
+    setCurtain(target, true);
+  });
+});
+
+// Office Time-Saved Calculator
+const roiInput = document.getElementById('roi-clients');
+const roiClientsPill = document.getElementById('roi-clients-pill');
+const roiHoursEl = document.getElementById('roi-hours');
+const roiClicksEl = document.getElementById('roi-clicks');
+const roiInsightEl = document.getElementById('roi-insight');
+
+function updateRoiCalculator() {
+  if (!roiInput) return;
+  const clients = Number(roiInput.value) || 30;
+  const hours = Math.max(1, Math.round((clients * 41) / 60));
+  const clicks = clients * 60;
+  const days = (hours / 8).toFixed(1).replace('.', ',');
+
+  if (roiClientsPill) roiClientsPill.textContent = `${clients} clientes`;
+  if (roiHoursEl) roiHoursEl.textContent = `${hours}h`;
+  if (roiClicksEl) roiClicksEl.textContent = clicks.toLocaleString('pt-BR');
+  if (roiInsightEl) {
+    roiInsightEl.innerHTML = `Equivale a cerca de <b>${days} dias úteis</b> liberados todo mês para sua equipe focar em análise jurídica.`;
+  }
+}
+if (roiInput) {
+  roiInput.addEventListener('input', updateRoiCalculator);
+  updateRoiCalculator();
+}
+
+// ── 13. Command Palette (Ctrl+K / ⌘K) ────────────────────────────────────────
+const cmdkModal = document.getElementById('cmdk-modal');
+const cmdkInput = document.getElementById('cmdk-input');
+const cmdkList = document.getElementById('cmdk-list');
+const btnCmdk = document.getElementById('btn-cmdk');
+
+const cmdkCommands = [
+  {
+    id: 'download',
+    title: 'Baixar extensão (.zip v2.2.0)',
+    sub: 'Download direto · Chrome e Microsoft Edge',
+    tag: 'Download',
+    keys: 'baixar download zip extensao instalar',
+    icon: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+    run: () => {
+      const dl = document.querySelector('[data-dl-ext]');
+      if (dl) dl.click();
+    }
+  },
+  {
+    id: 'simulate',
+    title: 'Simular extração ao vivo',
+    sub: 'Ver contratos renomeados e separados em tempo real',
+    tag: 'Demo',
+    keys: 'simular extracao demo testar preview hero',
+    icon: '<svg class="ico" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>',
+    run: () => {
+      window.scrollTo({ top: 0, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+      setTimeout(() => runInteractiveSimulation(0, true), 260);
+    }
+  },
+  {
+    id: 'tut-install',
+    title: 'Tutorial: Como instalar (9 slides)',
+    sub: 'Passo a passo ilustrado para Chrome e Edge',
+    tag: 'Slides',
+    keys: 'instalar tutorial slides extensoes chrome edge',
+    icon: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+    run: () => {
+      selectTutorialDeck('instalar', 0);
+      const sec = document.getElementById('tutoriais');
+      if (sec) sec.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    }
+  },
+  {
+    id: 'tut-use',
+    title: 'Tutorial: Como usar no Meu INSS (5 slides)',
+    sub: 'Login gov.br, opções de extração e pasta final',
+    tag: 'Slides',
+    keys: 'usar uso tutorial slides meu inss contratos hiscre',
+    icon: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+    run: () => {
+      selectTutorialDeck('usar', 0);
+      const sec = document.getElementById('tutoriais');
+      if (sec) sec.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    }
+  },
+  {
+    id: 'impacto',
+    title: 'Comparar Antes vs. Depois + Calculadora',
+    sub: 'Arraste a cortina e calcule horas economizadas no mês',
+    tag: 'ROI',
+    keys: 'antes depois comparar cortina calculadora horas tempo',
+    icon: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 3 12 9 6"/><polyline points="15 6 21 12 15 18"/></svg>',
+    run: () => {
+      const sec = document.getElementById('impacto');
+      if (sec) sec.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    }
+  },
+  {
+    id: 'mit',
+    title: 'Personalizar com IA (Licença MIT)',
+    sub: 'Gerar prompt sob medida para seu escritório',
+    tag: 'MIT + IA',
+    keys: 'mit personalizar ia claude chatgpt escritorio prompt white label',
+    icon: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>',
+    run: () => {
+      const sec = document.getElementById('personalizar');
+      if (sec) sec.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
+    }
+  },
+  {
+    id: 'pix',
+    title: 'Copiar chave Pix (NG.CASH)',
+    sub: '+55 21 96484-2518 · Apoio voluntário',
+    tag: 'Pix',
+    keys: 'pix apoiar doar qr ngcash chave',
+    icon: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+    run: () => {
+      const btn = document.getElementById('btn-copy-pix-key');
+      if (btn) btn.click();
+    }
+  },
+  {
+    id: 'whatsapp',
+    title: 'Falar no WhatsApp (Consultoria Gestão & IA)',
+    sub: 'Ferramentas e agentes sob medida com Gabriel Fonseca',
+    tag: 'Contato',
+    keys: 'whatsapp consultoria contato gabriel fonseca gestao ia',
+    icon: '<svg class="ico" viewBox="0 0 24 24" fill="currentColor"><path d="M12.03 2C6.51 2 2.04 6.47 2.04 11.98c0 1.76.46 3.48 1.34 5L2 22l5.15-1.35a9.95 9.95 0 0 0 4.88 1.27h.01c5.51 0 9.99-4.47 9.99-9.98A9.98 9.98 0 0 0 12.03 2Zm5.82 14.12c-.25.7-1.43 1.34-1.99 1.42-.51.08-1.16.11-1.88-.12-.44-.14-1-.33-1.72-.64-3.02-1.3-4.99-4.35-5.14-4.55-.15-.2-1.23-1.63-1.23-3.11 0-1.48.78-2.21 1.05-2.51.28-.3.6-.38.8-.38h.58c.19 0 .44-.07.68.52.25.6.85 2.08.93 2.23.07.15.12.33.02.53-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.15.15-.3.31-.13.61.18.3.78 1.29 1.68 2.09 1.15 1.03 2.13 1.35 2.43 1.5.3.15.48.12.65-.08.18-.2.75-.87.95-1.17.2-.3.4-.25.67-.15.28.1 1.76.83 2.06.98.3.15.5.22.58.35.07.12.07.72-.18 1.42Z"/></svg>',
+    run: () => {
+      window.open(
+        'https://wa.me/5521964842518?text=Ol%C3%A1%20Gabriel!%20Conheci%20o%20INSS%20Extractor%20by%20FonCK%20e%20gostaria%20de%20conversar%20sobre%20consultoria%20em%20Gest%C3%A3o%20%26%20IA.',
+        '_blank',
+        'noopener'
+      );
+    }
+  },
+  {
+    id: 'theme',
+    title: 'Alternar tema Claro / Escuro',
+    sub: 'Trocar entre Editorial Claro e Studio Obsidian',
+    tag: 'Tema',
+    keys: 'tema escuro claro dark light modo',
+    icon: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+    run: () => {
+      if (btnTheme) btnTheme.click();
+    }
+  }
+];
+
+let cmdkFiltered = cmdkCommands.slice();
+let cmdkSelected = 0;
+
+function renderCmdkList() {
+  if (!cmdkList) return;
+  if (!cmdkFiltered.length) {
+    cmdkList.innerHTML = '<div class="cmdk-empty">Nenhum comando encontrado.</div>';
+    return;
+  }
+  cmdkSelected = Math.max(0, Math.min(cmdkFiltered.length - 1, cmdkSelected));
+  cmdkList.innerHTML = cmdkFiltered
+    .map(
+      (cmd, idx) => `
+        <button class="cmdk-item" role="option" aria-selected="${idx === cmdkSelected}" data-cmd-idx="${idx}" type="button">
+          <div class="cmdk-item-left">
+            <span class="cmdk-item-ico" aria-hidden="true">${cmd.icon}</span>
+            <div><strong>${cmd.title}</strong><small>${cmd.sub}</small></div>
+          </div>
+          <span class="cmdk-tag">${cmd.tag}</span>
+        </button>
+      `
+    )
+    .join('');
+
+  cmdkList.querySelectorAll('[data-cmd-idx]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = Number(btn.getAttribute('data-cmd-idx')) || 0;
+      const cmd = cmdkFiltered[idx];
+      closeCmdk();
+      if (cmd) cmd.run();
+    });
+  });
+}
+
+function openCmdk() {
+  if (!cmdkModal) return;
+  cmdkModal.classList.add('open');
+  cmdkModal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  if (cmdkInput) {
+    cmdkInput.value = '';
+    cmdkFiltered = cmdkCommands.slice();
+    cmdkSelected = 0;
+    renderCmdkList();
+    setTimeout(() => cmdkInput.focus(), 20);
+  }
+}
+
+function closeCmdk() {
+  if (!cmdkModal) return;
+  cmdkModal.classList.remove('open');
+  cmdkModal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+
+if (btnCmdk) btnCmdk.addEventListener('click', openCmdk);
+if (cmdkModal) {
+  cmdkModal.querySelectorAll('[data-cmdk-close]').forEach((el) => el.addEventListener('click', closeCmdk));
+}
+if (cmdkInput) {
+  cmdkInput.addEventListener('input', () => {
+    const q = cmdkInput.value.trim().toLowerCase();
+    cmdkFiltered = q
+      ? cmdkCommands.filter((c) => `${c.title} ${c.sub} ${c.keys}`.toLowerCase().includes(q))
+      : cmdkCommands.slice();
+    cmdkSelected = 0;
+    renderCmdkList();
+  });
+}
+
+window.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    if (cmdkModal && cmdkModal.classList.contains('open')) closeCmdk();
+    else openCmdk();
+    return;
+  }
+  if (!cmdkModal || !cmdkModal.classList.contains('open')) return;
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    closeCmdk();
+  } else if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    cmdkSelected = (cmdkSelected + 1) % Math.max(1, cmdkFiltered.length);
+    renderCmdkList();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    cmdkSelected = (cmdkSelected - 1 + Math.max(1, cmdkFiltered.length)) % Math.max(1, cmdkFiltered.length);
+    renderCmdkList();
+  } else if (e.key === 'Enter' && cmdkFiltered[cmdkSelected]) {
+    e.preventDefault();
+    const cmd = cmdkFiltered[cmdkSelected];
+    closeCmdk();
+    cmd.run();
+  }
+});
