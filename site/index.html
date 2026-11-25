@@ -143,9 +143,9 @@
                 <span id="live-dot" class="live-dot" aria-hidden="true"></span>
                 <span id="live-status-text">Sessão local ativa</span>
               </span>
-              <button id="btn-run-sim" class="sim-trigger-btn" type="button">
-                <svg id="sim-btn-ico" class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 4 20 12 6 20 6 4"/></svg>
-                <span id="sim-btn-lbl">Simular extração</span>
+              <button id="btn-run-sim" class="sim-trigger-btn" type="button" aria-pressed="true" title="Pausar ou retomar a demonstração automática">
+                <svg id="sim-btn-ico" class="ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+                <span id="sim-btn-lbl">Pausar demo</span>
               </button>
             </div>
           </div>
@@ -491,103 +491,149 @@
         </div>
 
         <div class="impact-grid" data-reveal style="--reveal-delay:70ms">
-          <!-- Interactive Drag-to-Organize Split Curtain -->
+          <!-- Interactive Vertical Scan-to-Organize Curtain (Zero Text Clipping) -->
           <div class="curtain-col">
-            <div id="compare-curtain" class="curtain-stage" style="--split:52%" role="region" aria-label="Comparador interativo Antes e Depois da organização de arquivos">
-              <!-- Layer A (Background): Organized WITH Extension -->
-              <div class="curtain-layer curtain-layer--after">
-                <div class="curtain-bar curtain-bar--after">
-                  <span class="curtain-badge curtain-badge--ok">Com INSS Extractor · 1 clique</span>
-                  <span class="curtain-time">~45 seg / cliente</span>
+            <div class="curtain-shell">
+              <!-- Live Dynamic Header (never clipped mid-word!) -->
+              <div id="curtain-head" class="curtain-head is-mid">
+                <div class="curtain-head-top">
+                  <span id="curtain-status-badge" class="curtain-badge curtain-badge--mid">
+                    <span class="curtain-dot" aria-hidden="true"></span>
+                    <span id="curtain-status-text">Arraste o scanner · 3 de 6 organizados</span>
+                  </span>
+                  <span id="curtain-time" class="curtain-time">~42 min → ~45 seg</span>
                 </div>
-                <div class="curtain-tree">
-                  <div class="c-path">Downloads / Contratos INSS / GABRIEL FONSECA (DEMO) / NB 000.123.456-7</div>
-                  <div class="c-row c-row--good">
-                    <img src="assets/icons/pdf2.svg" alt="" width="17" height="17">
-                    <code>Empréstimos / 01Jan21 - GABRIEL FONSECA BANCO - 0000102030.pdf</code>
-                    <span class="pill pill--ok">Renomeado</span>
-                  </div>
-                  <div class="c-row c-row--good">
-                    <img src="assets/icons/pdf2.svg" alt="" width="17" height="17">
-                    <code>Cartão RMC / 01Dez18 - FONCK CONSIGNADO - 0000203040.pdf</code>
-                    <span class="pill pill--ok">Separado</span>
-                  </div>
-                  <div class="c-row c-row--good">
-                    <img src="assets/icons/pdf2.svg" alt="" width="17" height="17">
-                    <code>Cartão RCC / 21Set22 - FONCK CARTÕES - 0000304050.pdf</code>
-                    <span class="pill pill--ok">Separado</span>
-                  </div>
-                  <div class="c-row c-row--good">
-                    <img src="assets/icons/image.svg" alt="" width="17" height="17">
-                    <code>Documento Oficial Frente.jpg · Verso.jpg · Biometria.jpg</code>
-                    <span class="pill pill--accent">Extraído local</span>
-                  </div>
-                  <div class="c-row c-row--good">
-                    <img src="assets/icons/pdf2.svg" alt="" width="17" height="17">
-                    <code>Extrato HISCRE 03-2016 a 11-2026.pdf (PDF único + 12m)</code>
-                    <span class="pill pill--accent">Desde 06/1994</span>
-                  </div>
-                  <div class="c-row c-row--good">
-                    <img src="assets/icons/excel.svg" alt="" width="17" height="17">
-                    <code>Resumo dos contratos.csv · Resumo Cartões RMC e RCC.csv</code>
-                    <span class="pill pill--ok">Excel PT-BR</span>
-                  </div>
+                <div id="curtain-path" class="curtain-head-path">
+                  <svg class="c-path-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                  <span id="curtain-path-text">Downloads / Contratos INSS / GABRIEL FONSECA (DEMO) / NB 000.123.456-7</span>
                 </div>
               </div>
 
-              <!-- Layer B (Clipped Overlay): Chaotic Manual Downloads -->
-              <div class="curtain-layer curtain-layer--before" aria-hidden="true">
-                <div class="curtain-bar curtain-bar--before">
-                  <span class="curtain-badge curtain-badge--warn">Manual no Meu INSS</span>
-                  <span class="curtain-time">~42 min / cliente</span>
+              <!-- Vertical Split Viewport (Top = Organized WITH Extension, Bottom = Manual Chaos) -->
+              <div id="compare-curtain" class="curtain-stage" style="--split:50%" role="region" aria-label="Comparador interativo Antes e Depois da organização de arquivos">
+                <!-- Base Layer: Chaotic Manual Downloads (visible BELOW scanner line) -->
+                <div class="curtain-layer curtain-layer--before" aria-hidden="true">
+                  <div class="curtain-rows">
+                    <div class="c-row c-row--mess">
+                      <span class="mess-dot"></span>
+                      <div class="c-row-txt">
+                        <code>download (1).pdf</code>
+                        <small>Sem data, sem nome do banco e sem nº do contrato</small>
+                      </div>
+                      <span class="pill pill--warn">Qual banco?</span>
+                    </div>
+                    <div class="c-row c-row--mess">
+                      <span class="mess-dot"></span>
+                      <div class="c-row-txt">
+                        <code>download (2).pdf</code>
+                        <small>Empréstimo, RMC e RCC misturados na mesma pasta</small>
+                      </div>
+                      <span class="pill pill--warn">RMC ou RCC?</span>
+                    </div>
+                    <div class="c-row c-row--mess">
+                      <span class="mess-dot"></span>
+                      <div class="c-row-txt">
+                        <code>comprovante_sem_nome_091.pdf</code>
+                        <small>Abrir PDF um por um para renomear manualmente</small>
+                      </div>
+                      <span class="pill pill--warn">Manual</span>
+                    </div>
+                    <div class="c-row c-row--mess">
+                      <span class="mess-dot"></span>
+                      <div class="c-row-txt">
+                        <code>doc_identificacao_duplicado (3).pdf</code>
+                        <small>Imagens presas no PDF sem frente/verso ou biometria</small>
+                      </div>
+                      <span class="pill pill--warn">Sem biometria</span>
+                    </div>
+                    <div class="c-row c-row--mess">
+                      <span class="mess-dot"></span>
+                      <div class="c-row-txt">
+                        <code>extrato_hiscre_ultimos_5_anos.pdf</code>
+                        <small>Limitado a 5 anos · precisa consultar ano por ano</small>
+                      </div>
+                      <span class="pill pill--warn">Incompleto</span>
+                    </div>
+                    <div class="c-row c-row--mess">
+                      <span class="mess-dot"></span>
+                      <div class="c-row-txt">
+                        <code>planilha_manual_copia_final_v2.xlsx</code>
+                        <small>Digitado à mão e sem lista dos bancos pendentes</small>
+                      </div>
+                      <span class="pill pill--warn">Sem pendentes</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="curtain-tree">
-                  <div class="c-path">Downloads / (tudo misturado · 14 janelas "Salvar como...")</div>
-                  <div class="c-row c-row--mess">
-                    <span class="mess-dot"></span>
-                    <code>download (1).pdf</code>
-                    <span class="pill pill--warn">Qual banco?</span>
-                  </div>
-                  <div class="c-row c-row--mess">
-                    <span class="mess-dot"></span>
-                    <code>download (2).pdf</code>
-                    <span class="pill pill--warn">RMC ou RCC?</span>
-                  </div>
-                  <div class="c-row c-row--mess">
-                    <span class="mess-dot"></span>
-                    <code>comprovante_sem_nome_091.pdf</code>
-                    <span class="pill pill--warn">Renomear na mão</span>
-                  </div>
-                  <div class="c-row c-row--mess">
-                    <span class="mess-dot"></span>
-                    <code>doc_identificacao_duplicado (3).pdf</code>
-                    <span class="pill pill--warn">Sem biometria</span>
-                  </div>
-                  <div class="c-row c-row--mess">
-                    <span class="mess-dot"></span>
-                    <code>extrato_hiscre_ultimos_5_anos.pdf</code>
-                    <span class="pill pill--warn">Incompleto</span>
-                  </div>
-                  <div class="c-row c-row--mess">
-                    <span class="mess-dot"></span>
-                    <code>planilha_manual_copia_final_v2.xlsx</code>
-                    <span class="pill pill--warn">Digitado à mão</span>
-                  </div>
-                </div>
-              </div>
 
-              <!-- Draggable Divider Handle -->
-              <div id="curtain-handle" class="curtain-handle" role="slider" tabindex="0" aria-label="Arraste para comparar extração manual versus INSS Extractor" aria-valuemin="8" aria-valuemax="92" aria-valuenow="52">
-                <span class="curtain-grip" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 3 12 9 6"/><polyline points="15 6 21 12 15 18"/></svg>
-                </span>
+                <!-- Top Clipped Layer: Organized WITH INSS Extractor (revealed ABOVE scanner line) -->
+                <div class="curtain-layer curtain-layer--after">
+                  <div class="curtain-rows">
+                    <div class="c-row c-row--good">
+                      <img src="assets/icons/pdf2.svg" alt="" width="17" height="17">
+                      <div class="c-row-txt">
+                        <code>01Jan21 - GABRIEL FONSECA BANCO - 0000102030.pdf</code>
+                        <small>Pasta Empréstimos/ · renomeado automaticamente</small>
+                      </div>
+                      <span class="pill pill--ok">Renomeado</span>
+                    </div>
+                    <div class="c-row c-row--good">
+                      <img src="assets/icons/pdf2.svg" alt="" width="17" height="17">
+                      <div class="c-row-txt">
+                        <code>01Dez18 - FONCK CONSIGNADO - 0000203040.pdf</code>
+                        <small>Pasta Cartão RMC/ · separado por modalidade</small>
+                      </div>
+                      <span class="pill pill--ok">Separado</span>
+                    </div>
+                    <div class="c-row c-row--good">
+                      <img src="assets/icons/pdf2.svg" alt="" width="17" height="17">
+                      <div class="c-row-txt">
+                        <code>21Set22 - FONCK CARTÕES - 0000304050.pdf</code>
+                        <small>Pasta Cartão RCC/ · separado por modalidade</small>
+                      </div>
+                      <span class="pill pill--ok">Separado</span>
+                    </div>
+                    <div class="c-row c-row--good">
+                      <img src="assets/icons/image.svg" alt="" width="17" height="17">
+                      <div class="c-row-txt">
+                        <code>Documento Oficial Frente &amp; Verso · Biometria.jpg</code>
+                        <small>Imagens extraídas localmente do PDF de identificação</small>
+                      </div>
+                      <span class="pill pill--accent">Extraído local</span>
+                    </div>
+                    <div class="c-row c-row--good">
+                      <img src="assets/icons/pdf2.svg" alt="" width="17" height="17">
+                      <div class="c-row-txt">
+                        <code>Extrato HISCRE 03-2016 a 11-2026.pdf</code>
+                        <small>PDF único + pastas de 12 em 12 meses sem limite de 5 anos</small>
+                      </div>
+                      <span class="pill pill--accent">Desde 06/1994</span>
+                    </div>
+                    <div class="c-row c-row--good">
+                      <img src="assets/icons/excel.svg" alt="" width="17" height="17">
+                      <div class="c-row-txt">
+                        <code>Resumo dos contratos.csv · CONTRATOS-PENDENTES.txt</code>
+                        <small>Excel PT-BR + lista única dos bancos sem cópia</small>
+                      </div>
+                      <span class="pill pill--ok">CSV + .txt</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Horizontal Scan-Beam Handle (Drag Up / Down) -->
+                <div id="curtain-handle" class="curtain-handle" role="slider" tabindex="0" aria-orientation="vertical" aria-label="Arraste para cima ou para baixo para transformar os arquivos do modo manual para o INSS Extractor" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                  <span class="curtain-beam" aria-hidden="true"></span>
+                  <span class="curtain-grip" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 9 12 3 6 9"/><polyline points="6 15 12 21 18 15"/></svg>
+                    <span id="curtain-grip-lbl">Arraste</span>
+                  </span>
+                </div>
               </div>
             </div>
 
             <div class="curtain-presets" aria-label="Atalhos da comparação">
-              <button class="curtain-chip" type="button" data-curtain-to="88">Antes (manual)</button>
-              <button class="curtain-chip is-active" type="button" data-curtain-to="52">Comparar 50 / 50</button>
-              <button class="curtain-chip" type="button" data-curtain-to="10">Pasta pronta</button>
+              <button class="curtain-chip" type="button" data-curtain-to="0">Antes (manual)</button>
+              <button class="curtain-chip is-active" type="button" data-curtain-to="50">Comparar 50 / 50</button>
+              <button class="curtain-chip" type="button" data-curtain-to="100">Pasta pronta</button>
             </div>
           </div>
 

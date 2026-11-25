@@ -94,10 +94,14 @@ if (!prefersReducedMotion && window.matchMedia('(hover: hover) and (pointer: fin
   });
 }
 
-// ── 5. Interactive Clickable Hero Simulator ("Simular extração") ─────────────
+// ── 5. Interactive Fluid Loop Hero Simulator ("Simular extração") ────────────
+const heroAppFrame = document.getElementById('hero-app-frame');
 const heroTabGroup = document.querySelector('[data-tab-group="hero"]');
+let activeHeroTabId = 'hero-tab-contratos';
+
 function activateHeroTab(targetId) {
   if (!heroTabGroup) return;
+  activeHeroTabId = targetId;
   const tabs = heroTabGroup.querySelectorAll('.sliding-tab');
   tabs.forEach((tab) => {
     const match = tab.getAttribute('data-target') === targetId;
@@ -106,6 +110,16 @@ function activateHeroTab(targetId) {
     if (pane) pane.classList.toggle('active', match);
   });
   positionPill(heroTabGroup);
+
+  // Pause loop gently while user inspects other tabs; resume cleanly on Contratos
+  if (targetId !== 'hero-tab-contratos') {
+    clearSimTimers();
+    simRunning = false;
+    if (simProgress) simProgress.classList.remove('is-streaming');
+    if (liveDot) liveDot.classList.remove('is-busy');
+  } else if (simAutoLoop && !simUserPaused && simInView && !simRunning && !prefersReducedMotion) {
+    simTimers.push(setTimeout(() => runInteractiveSimulation(0, false), 420));
+  }
 }
 
 if (heroTabGroup) {
@@ -116,6 +130,7 @@ if (heroTabGroup) {
 
 const simRows = Array.from(document.querySelectorAll('[data-sim-row]'));
 const simDocs = Array.from(document.querySelectorAll('[data-sim-doc]'));
+const simDocList = document.getElementById('sim-doc-list');
 const simProgress = document.getElementById('sim-progress');
 const simActionTitle = document.getElementById('sim-action-title');
 const simActionCount = document.getElementById('sim-action-count');
@@ -133,46 +148,61 @@ const simSequence = [
   {
     row: 0,
     doc: 0,
+    pctStart: 14,
     pct: 28,
     saved: 1,
     csv: 0,
-    title: 'Renomeando 01Jan21 - GABRIEL FONSECA BANCO - 0000102030.pdf',
+    readingTitle: 'Lendo contrato · GABRIEL FONSECA BANCO (0000102030)...',
+    title: 'Renomeado: 01Jan21 - GABRIEL FONSECA BANCO - 0000102030.pdf',
     status: 'Extraindo Empréstimo...',
+    extractPill: 'Baixando...',
     pillText: 'Salvo'
   },
   {
     row: 1,
     doc: 1,
+    pctStart: 42,
     pct: 56,
     saved: 2,
     csv: 1,
-    title: 'Separando Cartão RMC · FONCK CONSIGNADO (0000203040)',
+    readingTitle: 'Separando Cartão RMC · FONCK CONSIGNADO (0000203040)...',
+    title: 'Pasta Cartão RMC criada · 01Dez18 - FONCK CONSIGNADO.pdf',
     status: 'Separando Cartão RMC...',
+    extractPill: 'Separando...',
     pillText: 'Salvo'
   },
   {
     row: 2,
     doc: 2,
+    pctStart: 70,
     pct: 82,
     saved: 3,
     csv: 1,
-    title: 'Separando Cartão RCC · FONCK CARTÕES (0000304050)',
+    readingTitle: 'Separando Cartão RCC · FONCK CARTÕES (0000304050)...',
+    title: 'Pasta Cartão RCC criada · 21Set22 - FONCK CARTÕES.pdf',
     status: 'Separando Cartão RCC...',
+    extractPill: 'Separando...',
     pillText: 'Salvo'
   },
   {
     row: 3,
     doc: 3,
+    pctStart: 92,
     pct: 100,
     saved: 3,
     csv: 2,
+    readingTitle: 'Consolidando CSV PT-BR e lista CONTRATOS-PENDENTES.txt...',
     title: 'Lote concluído · Sem cópia salvo em CONTRATOS-PENDENTES.txt',
     status: 'Lote concluído',
+    extractPill: 'Gerando...',
     pillText: 'Pronto'
   }
 ];
 
 let simRunning = false;
+let simAutoLoop = !prefersReducedMotion;
+let simUserPaused = false;
+let simInView = true;
 let simTimers = [];
 
 function clearSimTimers() {
@@ -180,13 +210,37 @@ function clearSimTimers() {
   simTimers = [];
 }
 
-function pulseConduit() {
+function updateSimToggleBtn() {
+  if (!btnRunSim || !simBtnLbl || !simBtnIco) return;
+  const isPlaying = simAutoLoop && !simUserPaused;
+  btnRunSim.setAttribute('aria-pressed', String(isPlaying));
+  if (isPlaying) {
+    simBtnLbl.textContent = 'Pausar demo';
+    simBtnIco.innerHTML =
+      '<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>';
+  } else {
+    simBtnLbl.textContent = 'Continuar demo';
+    simBtnIco.innerHTML = '<polygon points="6 4 20 12 6 20 6 4"/>';
+  }
+}
+
+function bumpCounter(el, nextValue) {
+  if (!el) return;
+  const valStr = String(nextValue);
+  if (el.textContent === valStr) return;
+  el.textContent = valStr;
+  el.classList.remove('cnt-bump');
+  void el.offsetWidth;
+  el.classList.add('cnt-bump');
+}
+
+function pulseConduit(duration = 720) {
   if (!conduitPacket) return;
   conduitPacket.classList.remove('is-firing');
   void conduitPacket.offsetWidth;
   conduitPacket.classList.add('is-firing');
   simTimers.push(
-    setTimeout(() => conduitPacket.classList.remove('is-firing'), 420)
+    setTimeout(() => conduitPacket.classList.remove('is-firing'), duration)
   );
 }
 
@@ -195,33 +249,42 @@ function applySimFinalState() {
     r.classList.toggle('is-active', i === 0);
     r.classList.remove('is-scanning');
   });
-  simDocs.forEach((d) => {
-    d.classList.remove('is-pending', 'is-fresh');
+  simDocs.forEach((d, idx) => {
+    d.classList.remove('is-pending', 'is-extracting', 'is-fresh');
     d.classList.add('is-done');
+    const pill = d.querySelector('[data-doc-pill]');
+    if (pill) {
+      pill.textContent = idx === 3 ? 'Pronto' : 'Salvo';
+      pill.className = 'pill pill--ok';
+    }
   });
-  if (simProgress) simProgress.style.width = '100%';
-  if (simActionTitle) simActionTitle.textContent = 'Lote concluído · Arquivos renomeados e separados';
+  if (simDocList) simDocList.classList.remove('is-resetting');
+  if (simProgress) {
+    simProgress.style.width = '100%';
+    simProgress.classList.remove('is-streaming');
+  }
+  if (simActionTitle) simActionTitle.textContent = 'Lote concluído · Sem cópia salvo em CONTRATOS-PENDENTES.txt';
   if (simActionCount) simActionCount.textContent = '100%';
   if (cntSaved) cntSaved.textContent = '3';
   if (cntCsv) cntCsv.textContent = '2';
   if (liveStatusText) liveStatusText.textContent = 'Sessão local ativa';
   if (liveDot) liveDot.classList.remove('is-busy');
-  if (simBtnLbl) simBtnLbl.textContent = 'Simular extração';
-  if (simBtnIco) simBtnIco.innerHTML = '<polygon points="6 4 20 12 6 20 6 4"/>';
   if (btnFabSim) btnFabSim.classList.add('is-pulsing');
   simRunning = false;
 }
 
 function runInteractiveSimulation(startIdx = 0, userTriggered = false) {
   clearSimTimers();
-  activateHeroTab('hero-tab-contratos');
+  if (activeHeroTabId !== 'hero-tab-contratos') {
+    activateHeroTab('hero-tab-contratos');
+  }
 
   if (prefersReducedMotion) {
     applySimFinalState();
     if (userTriggered) {
       showToast({
         title: 'Simulação concluída',
-        detail: '3 contratos renomeados + 2 planilhas CSV separados.'
+        detail: '3 contratos renomeados + CSVs + CONTRATOS-PENDENTES.txt.'
       });
     }
     return;
@@ -230,29 +293,44 @@ function runInteractiveSimulation(startIdx = 0, userTriggered = false) {
   simRunning = true;
   if (liveDot) liveDot.classList.add('is-busy');
   if (btnFabSim) btnFabSim.classList.remove('is-pulsing');
-  if (simBtnLbl) simBtnLbl.textContent = 'Extraindo...';
-  if (simBtnIco) {
-    simBtnIco.innerHTML =
-      '<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>';
-  }
+  if (simDocList) simDocList.classList.remove('is-resetting');
+  if (simProgress) simProgress.classList.add('is-streaming');
+  updateSimToggleBtn();
 
-  // Reset docs from startIdx onward
+  // Prepare rows & docs smoothly from startIdx onward
   simDocs.forEach((d, idx) => {
-    d.classList.remove('is-fresh', 'is-done');
-    d.classList.toggle('is-pending', idx >= startIdx);
-    const pill = d.querySelector('[data-doc-pill]');
-    if (pill && idx >= startIdx) {
-      pill.textContent = 'Aguardando';
-      pill.className = 'pill pill--neutral';
+    d.classList.remove('is-fresh', 'is-extracting');
+    if (idx < startIdx) {
+      d.classList.remove('is-pending');
+      d.classList.add('is-done');
+      const pill = d.querySelector('[data-doc-pill]');
+      if (pill) {
+        pill.textContent = idx === 3 ? 'Pronto' : 'Salvo';
+        pill.className = 'pill pill--ok';
+      }
+    } else {
+      d.classList.remove('is-done');
+      d.classList.add('is-pending');
+      const pill = d.querySelector('[data-doc-pill]');
+      if (pill) {
+        pill.textContent = 'Na fila';
+        pill.className = 'pill pill--neutral';
+      }
     }
   });
-  if (simProgress) simProgress.style.width = `${Math.max(8, startIdx * 25)}%`;
-  if (cntSaved) cntSaved.textContent = String(startIdx);
-  if (cntCsv) cntCsv.textContent = '0';
+  if (simProgress) simProgress.style.width = `${Math.max(4, startIdx * 26)}%`;
+  if (simActionCount) simActionCount.textContent = `${Math.max(4, startIdx * 26)}%`;
+  if (cntSaved) cntSaved.textContent = String(Math.min(3, startIdx));
+  if (cntCsv) cntCsv.textContent = startIdx > 1 ? '1' : '0';
 
+  const STEP_CADENCE_MS = 2050;
+  const ARRIVE_OFFSET_MS = 960;
   const stepsToRun = simSequence.slice(startIdx);
+
   stepsToRun.forEach((step, offset) => {
-    const delay = offset * 860 + 120;
+    const startDelay = offset * STEP_CADENCE_MS + 180;
+
+    // Phase A: Scan contract on Meu INSS & stream through center conduit
     simTimers.push(
       setTimeout(() => {
         simRows.forEach((r, idx) => {
@@ -264,11 +342,32 @@ function runInteractiveSimulation(startIdx = 0, userTriggered = false) {
           }
         });
 
-        pulseConduit();
+        pulseConduit(820);
 
         const docEl = simDocs[step.doc];
         if (docEl) {
-          docEl.classList.remove('is-pending');
+          docEl.classList.remove('is-pending', 'is-fresh');
+          docEl.classList.add('is-extracting');
+          const pill = docEl.querySelector('[data-doc-pill]');
+          if (pill) {
+            pill.textContent = step.extractPill;
+            pill.className = 'pill pill--accent';
+          }
+        }
+
+        if (simProgress) simProgress.style.width = `${step.pctStart}%`;
+        if (simActionCount) simActionCount.textContent = `${step.pctStart}%`;
+        if (simActionTitle) simActionTitle.textContent = step.readingTitle;
+        if (liveStatusText) liveStatusText.textContent = step.status;
+      }, startDelay)
+    );
+
+    // Phase B: File lands renamed & saved in extension panel
+    simTimers.push(
+      setTimeout(() => {
+        const docEl = simDocs[step.doc];
+        if (docEl) {
+          docEl.classList.remove('is-pending', 'is-extracting');
           docEl.classList.add('is-done', 'is-fresh');
           const pill = docEl.querySelector('[data-doc-pill]');
           if (pill) {
@@ -280,54 +379,104 @@ function runInteractiveSimulation(startIdx = 0, userTriggered = false) {
         if (simProgress) simProgress.style.width = `${step.pct}%`;
         if (simActionTitle) simActionTitle.textContent = step.title;
         if (simActionCount) simActionCount.textContent = `${step.pct}%`;
-        if (cntSaved) cntSaved.textContent = String(step.saved);
-        if (cntCsv) cntCsv.textContent = String(step.csv);
-        if (liveStatusText) liveStatusText.textContent = step.status;
+        bumpCounter(cntSaved, step.saved);
+        bumpCounter(cntCsv, step.csv);
 
         if (offset === stepsToRun.length - 1) {
           simTimers.push(
             setTimeout(() => {
               simRunning = false;
               if (liveDot) liveDot.classList.remove('is-busy');
-              if (simBtnLbl) simBtnLbl.textContent = 'Simular novamente';
-              if (simBtnIco) {
-                simBtnIco.innerHTML =
-                  '<path d="M21 12a9 9 0 1 1-2.64-6.36" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polyline points="21 3 21 9 15 9" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>';
-              }
+              if (liveStatusText) liveStatusText.textContent = 'Lote concluído';
+              if (simProgress) simProgress.classList.remove('is-streaming');
               if (btnFabSim) btnFabSim.classList.add('is-pulsing');
               if (userTriggered) {
                 showToast({
                   title: 'Lote simulado com sucesso',
-                  detail: '3 PDFs renomeados + 2 planilhas CSV PT-BR prontos.'
+                  detail: '3 PDFs renomeados + CSVs + CONTRATOS-PENDENTES.txt.'
                 });
               }
-            }, 680)
+
+              // Calm reading pause (3.4s), then fluid fade-reset into next continuous loop
+              if (simAutoLoop && !simUserPaused && simInView && activeHeroTabId === 'hero-tab-contratos') {
+                simTimers.push(
+                  setTimeout(() => {
+                    if (!simAutoLoop || simUserPaused || !simInView || activeHeroTabId !== 'hero-tab-contratos') return;
+                    if (simDocList) simDocList.classList.add('is-resetting');
+                    if (liveStatusText) liveStatusText.textContent = 'Reiniciando demonstração...';
+                    simTimers.push(
+                      setTimeout(() => {
+                        if (!simAutoLoop || simUserPaused || !simInView || activeHeroTabId !== 'hero-tab-contratos') return;
+                        runInteractiveSimulation(0, false);
+                      }, 560)
+                    );
+                  }, 3400)
+                );
+              }
+            }, 420)
           );
         }
-      }, delay)
+      }, startDelay + ARRIVE_OFFSET_MS)
     );
   });
 }
 
 if (btnRunSim) {
-  btnRunSim.addEventListener('click', () => runInteractiveSimulation(0, true));
+  updateSimToggleBtn();
+  btnRunSim.addEventListener('click', () => {
+    if (simAutoLoop && !simUserPaused) {
+      simUserPaused = true;
+      clearSimTimers();
+      applySimFinalState();
+      updateSimToggleBtn();
+    } else {
+      simUserPaused = false;
+      simAutoLoop = true;
+      updateSimToggleBtn();
+      runInteractiveSimulation(0, true);
+    }
+  });
 }
 if (btnFabSim) {
   btnFabSim.classList.add('is-pulsing');
-  btnFabSim.addEventListener('click', () => runInteractiveSimulation(0, true));
+  btnFabSim.addEventListener('click', () => {
+    simUserPaused = false;
+    simAutoLoop = true;
+    updateSimToggleBtn();
+    runInteractiveSimulation(0, true);
+  });
 }
 simRows.forEach((row) => {
   row.addEventListener('click', () => {
     const idx = Number(row.getAttribute('data-sim-row')) || 0;
+    simUserPaused = false;
+    simAutoLoop = true;
+    updateSimToggleBtn();
     runInteractiveSimulation(idx, true);
   });
 });
 
-// Gentle single introductory showcase shortly after load (respects reduced motion)
-if (!prefersReducedMotion) {
+// Auto-pause when Hero scrolls out of view; resume smoothly when visible
+if (!prefersReducedMotion && heroAppFrame && 'IntersectionObserver' in window) {
+  const heroIo = new IntersectionObserver(
+    (entries) => {
+      const visible = entries[0] && entries[0].isIntersecting;
+      simInView = Boolean(visible);
+      if (!simInView) {
+        clearSimTimers();
+        simRunning = false;
+        if (simProgress) simProgress.classList.remove('is-streaming');
+      } else if (simAutoLoop && !simUserPaused && activeHeroTabId === 'hero-tab-contratos' && !simRunning) {
+        simTimers.push(setTimeout(() => runInteractiveSimulation(0, false), 520));
+      }
+    },
+    { threshold: 0.2 }
+  );
+  heroIo.observe(heroAppFrame);
+} else if (!prefersReducedMotion) {
   setTimeout(() => {
-    if (!simRunning) runInteractiveSimulation(0);
-  }, 1100);
+    if (!simRunning) runInteractiveSimulation(0, false);
+  }, 900);
 }
 
 // ── 6. Centro de Tutoriais em Slides (Como instalar · 9 | Como usar · 5) ─────
@@ -1071,41 +1220,127 @@ bindCopyButton(
   '+55 21 96484-2518 · Gabriel Fonseca (NG.CASH)'
 );
 
-// ── 12. Interactive Before/After Drag Curtain + Office ROI Calculator ────────
+// ── 12. Interactive Vertical Scan-to-Organize Curtain (0-100%, Zero Clip) ────
 const curtainStage = document.getElementById('compare-curtain');
+const curtainHead = document.getElementById('curtain-head');
+const curtainStatusBadge = document.getElementById('curtain-status-badge');
+const curtainStatusText = document.getElementById('curtain-status-text');
+const curtainTimeEl = document.getElementById('curtain-time');
+const curtainPathText = document.getElementById('curtain-path-text');
 const curtainHandle = document.getElementById('curtain-handle');
+const curtainGripLbl = document.getElementById('curtain-grip-lbl');
 const curtainChips = Array.from(document.querySelectorAll('[data-curtain-to]'));
-let curtainPct = 52;
+let curtainPct = 50;
+let curtainInteracted = false;
+let curtainIntroTimers = [];
+
+function cancelCurtainIntro() {
+  curtainIntroTimers.forEach((id) => clearTimeout(id));
+  curtainIntroTimers = [];
+  if (!curtainInteracted && curtainStage) {
+    curtainInteracted = true;
+    curtainStage.classList.add('has-interacted');
+  }
+}
 
 function setCurtain(pct, animate = false) {
-  curtainPct = Math.max(8, Math.min(92, pct));
+  curtainPct = Math.max(0, Math.min(100, pct));
   if (!curtainStage) return;
   curtainStage.classList.toggle('is-gliding', animate && !prefersReducedMotion);
   curtainStage.style.setProperty('--split', `${curtainPct.toFixed(1)}%`);
+  curtainStage.classList.toggle('at-edge-top', curtainPct <= 4);
+  curtainStage.classList.toggle('at-edge-bottom', curtainPct >= 96);
   if (curtainHandle) curtainHandle.setAttribute('aria-valuenow', String(Math.round(curtainPct)));
+
+  // Live header transformation (never sliced mid-word)
+  const organizedCount = Math.round((curtainPct / 100) * 6);
+  if (curtainHead && curtainStatusBadge && curtainStatusText) {
+    curtainHead.classList.remove('is-before', 'is-mid', 'is-after');
+    curtainStatusBadge.classList.remove('curtain-badge--warn', 'curtain-badge--mid', 'curtain-badge--ok');
+
+    if (curtainPct <= 6) {
+      curtainHead.classList.add('is-before');
+      curtainStatusBadge.classList.add('curtain-badge--warn');
+      curtainStatusText.textContent = 'Manual no Meu INSS · sem organização';
+      if (curtainTimeEl) curtainTimeEl.textContent = '~42 min / cliente';
+      if (curtainPathText) curtainPathText.textContent = 'Downloads / (tudo misturado · 14 janelas "Salvar como...")';
+      if (curtainGripLbl) curtainGripLbl.textContent = 'Arraste ↓';
+    } else if (curtainPct >= 94) {
+      curtainHead.classList.add('is-after');
+      curtainStatusBadge.classList.add('curtain-badge--ok');
+      curtainStatusText.textContent = 'Com INSS Extractor · 6 de 6 prontos';
+      if (curtainTimeEl) curtainTimeEl.textContent = '~45 seg / cliente';
+      if (curtainPathText) curtainPathText.textContent = 'Downloads / Contratos INSS / GABRIEL FONSECA (DEMO) / NB 000.123.456-7';
+      if (curtainGripLbl) curtainGripLbl.textContent = 'Arraste ↑';
+    } else {
+      curtainHead.classList.add('is-mid');
+      curtainStatusBadge.classList.add('curtain-badge--mid');
+      curtainStatusText.textContent = `Comparando · ${organizedCount} de 6 organizados`;
+      if (curtainTimeEl) curtainTimeEl.textContent = '~42 min → ~45 seg';
+      if (curtainPathText) curtainPathText.textContent = 'Downloads / Contratos INSS / GABRIEL FONSECA (DEMO) / NB 000.123.456-7';
+      if (curtainGripLbl) curtainGripLbl.textContent = 'Arraste';
+    }
+  }
+
+  // Highlight closest preset chip
+  let bestChip = null;
+  let bestDiff = Infinity;
   curtainChips.forEach((chip) => {
-    const target = Number(chip.getAttribute('data-curtain-to')) || 52;
-    chip.classList.toggle('is-active', Math.abs(target - curtainPct) < 12);
+    const target = Number(chip.getAttribute('data-curtain-to'));
+    const diff = Math.abs(target - curtainPct);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      bestChip = chip;
+    }
+  });
+  curtainChips.forEach((chip) => {
+    chip.classList.toggle('is-active', chip === bestChip && bestDiff <= 25);
   });
 }
 
 if (curtainStage) {
   let dragging = false;
-  const updateFromClientX = (clientX) => {
+  let pendingY = null;
+  let rafId = 0;
+
+  const flushDrag = () => {
+    rafId = 0;
+    if (pendingY === null) return;
     const rect = curtainStage.getBoundingClientRect();
-    const pct = ((clientX - rect.left) / Math.max(1, rect.width)) * 100;
-    setCurtain(pct, false);
+    const rawPct = ((pendingY - rect.top) / Math.max(1, rect.height)) * 100;
+    const snapped = rawPct < 4 ? 0 : rawPct > 96 ? 100 : rawPct;
+    setCurtain(snapped, false);
+    pendingY = null;
   };
-  curtainStage.addEventListener('pointerdown', (e) => {
+
+  const scheduleFromClientY = (clientY) => {
+    pendingY = clientY;
+    if (!rafId) rafId = requestAnimationFrame(flushDrag);
+  };
+
+  const startDrag = (e) => {
+    cancelCurtainIntro();
     dragging = true;
     curtainStage.classList.add('is-dragging');
     curtainStage.classList.remove('is-gliding');
     try { curtainStage.setPointerCapture(e.pointerId); } catch {}
-    updateFromClientX(e.clientX);
+    scheduleFromClientY(e.clientY);
+  };
+
+  // On desktop mouse: dragging anywhere on stage works; on touch: handle drags smoothly without blocking page scroll
+  curtainStage.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'touch' && !e.target.closest('#curtain-handle')) {
+      cancelCurtainIntro();
+      const rect = curtainStage.getBoundingClientRect();
+      const rawPct = ((e.clientY - rect.top) / Math.max(1, rect.height)) * 100;
+      setCurtain(rawPct < 10 ? 0 : rawPct > 90 ? 100 : rawPct, true);
+      return;
+    }
+    startDrag(e);
   });
   curtainStage.addEventListener('pointermove', (e) => {
     if (!dragging) return;
-    updateFromClientX(e.clientX);
+    scheduleFromClientY(e.clientY);
   });
   const endDrag = () => {
     if (!dragging) return;
@@ -1114,19 +1349,50 @@ if (curtainStage) {
   };
   curtainStage.addEventListener('pointerup', endDrag);
   curtainStage.addEventListener('pointercancel', endDrag);
+
+  // Smooth 1-time welcome scan sweep on first entry into view (0% -> 100% -> 50%)
+  if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+    let introDone = false;
+    const curtainIo = new IntersectionObserver(
+      (entries) => {
+        if (introDone || curtainInteracted) return;
+        if (entries[0] && entries[0].isIntersecting) {
+          introDone = true;
+          curtainIo.disconnect();
+          setCurtain(0, false);
+          curtainIntroTimers.push(
+            setTimeout(() => {
+              if (!curtainInteracted) setCurtain(100, true);
+            }, 380),
+            setTimeout(() => {
+              if (!curtainInteracted) setCurtain(50, true);
+            }, 1480)
+          );
+        }
+      },
+      { threshold: 0.45 }
+    );
+    curtainIo.observe(curtainStage);
+  } else {
+    setCurtain(50, false);
+  }
 }
 
 if (curtainHandle) {
   curtainHandle.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') { e.preventDefault(); setCurtain(curtainPct - 6, true); }
-    else if (e.key === 'ArrowRight') { e.preventDefault(); setCurtain(curtainPct + 6, true); }
+    cancelCurtainIntro();
+    if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); setCurtain(curtainPct - 16.7, true); }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); setCurtain(curtainPct + 16.7, true); }
+    else if (e.key === 'Home') { e.preventDefault(); setCurtain(0, true); }
+    else if (e.key === 'End') { e.preventDefault(); setCurtain(100, true); }
   });
 }
 
 curtainChips.forEach((chip) => {
   chip.addEventListener('click', () => {
-    const target = Number(chip.getAttribute('data-curtain-to')) || 52;
-    setCurtain(target, true);
+    cancelCurtainIntro();
+    const target = Number(chip.getAttribute('data-curtain-to'));
+    setCurtain(Number.isFinite(target) ? target : 50, true);
   });
 });
 
