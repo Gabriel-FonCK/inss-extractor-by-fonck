@@ -1,0 +1,60 @@
+{
+  "manifest_version": 3,
+  "name": "INSS Extractor by FonCK",
+  "version": "2.2.0",
+  "description": "Open Source e 100% gratuito — Baixa contratos consignados renomeados (Empréstimos, RMC, RCC) e extrato de pagamento completo desde 06/1994.",
+  "homepage_url": "https://inss-extractor-by-fonck-site.vercel.app/",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "INSS Extractor by FonCK",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "permissions": [
+    "downloads",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://meu.inss.gov.br/*",
+    "https://vip-pmeuinss-api.inss.gov.br/*",
+    "https://vip-pmeuinss-arq.inss.gov.br/*"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/icon48.png", "icons/icon128.png"],
+      "matches": ["https://meu.inss.gov.br/*"]
+    }
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://meu.inss.gov.br/*"],
+      "js": ["content/page-bridge.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://meu.inss.gov.br/*"],
+      "js": [
+        "config.js",
+        "vendor/pdf-lib.min.js",
+        "content/rubricas-catalog.js",
+        "content/pdf-utils.js",
+        "content/csv-utils.js",
+        "content/content.js"
+      ],
+      "world": "ISOLATED",
+      "run_at": "document_idle"
+    }
+  ]
+}
