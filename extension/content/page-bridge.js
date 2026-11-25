@@ -564,7 +564,7 @@
     enumerable: true,
     value: Object.freeze({
       name: 'INSS Extractor by FonCK',
-      version: '2.2.0',
+      version: '2.4.0',
       getState: () => sendAgentCommand('GET_STATE'),
       openPanel: () => sendAgentCommand('OPEN_PANEL'),
       closePanel: () => sendAgentCommand('CLOSE_PANEL'),

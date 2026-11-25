@@ -3,7 +3,7 @@
 > Versão básica para revisão. Tempo estimado: **1 minuto**.
 
 ## 1. Baixar e descompactar o `.zip`
-1. Baixe o arquivo `inss-extractor-by-fonck-v2.2.0.zip`.
+1. Baixe o arquivo `inss-extractor-by-fonck-v2.4.0.zip`.
 2. Clique com o **botão direito** sobre o `.zip` e escolha **Extrair tudo...** (Windows) ou clique duas vezes (Mac).
 3. Salve a pasta extraída em um local fixo (ex.: `Documentos\inss-extractor-by-fonck`).
    - **Atenção:** não apague nem mova essa pasta depois de instalar.

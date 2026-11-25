@@ -13,7 +13,7 @@ Clique no botão flutuante **INSS Extractor by FonCK** (você pode alternar entr
 - **Aba Contratos:**
   - Baixa os contratos já separados em pastas (`Empréstimos/`, `Cartão RMC/` e `Cartão RCC/`).
   - Cada contrato em PDF já vem renomeado no padrão: `01Jan21 - GABRIEL FONSECA BANCO - 0000102030.pdf`.
-  - Também extrai `Dados de Identificação.pdf`, `Documento Oficial Frente/Verso.jpg`, `Registro Biométrico Facial.jpg`, `Resumo dos contratos.csv` e `Resumo Cartões RMC e RCC.csv`.
+  - Também extrai `Dados de Identificação.pdf`, `Documento Oficial Frente/Verso.jpg`, `Registro Biométrico Facial.jpg`, `Resumo dos contratos.csv`, `Resumo Cartões RMC e RCC.csv` e gera um único `CONTRATOS-PENDENTES.txt` agrupado por banco quando houver contratos sem cópia.
   - Clique em **Baixar contratos** ou **Baixar contratos e extrato de pagamento**.
 - **Aba Extrato de pagamento (HISCRE):**
   - Já vem configurado por padrão desde o **1º extrato possível (`06/1994`)** até o mês atual — sem limite de 5–6 anos.
@@ -22,7 +22,7 @@ Clique no botão flutuante **INSS Extractor by FonCK** (você pode alternar entr
 
 ## 3. Selos de resultado
 - **Salvo:** arquivos gravados em `Downloads/Contratos INSS/<NOME DO CLIENTE>/`.
-- **Sem cópia:** o INSS não possui cópia anexada pelo banco para aquele contrato (registrado no CSV).
+- **Sem cópia:** o INSS não possui cópia anexada pelo banco para aquele contrato (registrado no CSV e consolidado em `CONTRATOS-PENDENTES.txt`).
 - **Erro técnico:** falha temporária do servidor do INSS — ao final do lote, clique em **Repetir erros**.
 
 ## 4. Quer automatizar sem cliques com IA?

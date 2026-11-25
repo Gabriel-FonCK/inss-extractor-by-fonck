@@ -40,6 +40,7 @@ await window.EXTRATOR_MEU_INSS.configure({
     documentoOficial: true,
     biometriaFacial: true,
     planilhaResumo: true,
+    listaPendentesTxt: true,
     hiscrePdfsSeparados: true,
     hiscrePdfUnico: true,
     hiscrePlanilhaExcel: true
@@ -65,6 +66,6 @@ await window.EXTRATOR_MEU_INSS.runContracts({ onlyErrors: true });
 ### 5. Entregar o resumo ao usuário
 Informe de forma objetiva:
 - Pasta de saída: `Downloads/Contratos INSS/<NOME DO CLIENTE>/`
-- Quantidade de contratos salvos, `Sem cópia` e eventuais `Erro técnico` (já detalhados em `Resumo dos contratos.csv` e `Resumo Cartões RMC e RCC.csv`).
+- Quantidade de contratos salvos, `Sem cópia` e eventuais `Erro técnico` (já detalhados em `Resumo dos contratos.csv`, `Resumo Cartões RMC e RCC.csv` e na lista consolidada `CONTRATOS-PENDENTES.txt` agrupada por banco).
 - Contratos salvos já renomeados no padrão `DDMesAA - NOME DO BANCO - NÚMERO DO CONTRATO.pdf` (separados em `Empréstimos/`, `Cartão RMC/` e `Cartão RCC/`).
 - Extratos HISCRE de 12 em 12 meses + PDF unificado + planilha Excel `.csv`.

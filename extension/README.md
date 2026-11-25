@@ -1,6 +1,6 @@
-# INSS Extractor by FonCK (Open Source · v2.2.0)
+# INSS Extractor by FonCK (Open Source · v2.4.0)
 
-Extensão gratuita e **open source (Licença MIT)** desenvolvida por **Gabriel Fonseca (FonCK)** para Google Chrome e Microsoft Edge que extrai em lote todos os **contratos consignados** (separados em `Empréstimos/`, `Cartão RMC/` e `Cartão RCC/`, com o PDF do contrato já renomeado em `DDMesAA - BANCO - CONTRATO.pdf`) e o **extrato de pagamento (HISCRE)** completo **desde o 1º extrato possível (`06/1994`)** — 100% localmente no navegador.
+Extensão gratuita e **open source (Licença MIT)** desenvolvida por **Gabriel Fonseca (FonCK)** para Google Chrome e Microsoft Edge que extrai em lote todos os **contratos consignados** (separados em `Empréstimos/`, `Cartão RMC/` e `Cartão RCC/`, com o PDF do contrato já renomeado em `DDMesAA - BANCO - CONTRATO.pdf`), consolida os bancos sem cópia em um único `CONTRATOS-PENDENTES.txt` e baixa o **extrato de pagamento (HISCRE)** completo **desde o 1º extrato possível (`06/1994`)** — 100% localmente no navegador.
 
 - **Visual Editorial Minimalista** com **Tema Claro** e **Tema Escuro** (`☀ / ☾`).
 - **100% local e auditável:** zero telemetria, zero coleta de senhas, zero servidor externo. Veja [SECURITY.md](SECURITY.md).

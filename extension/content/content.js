@@ -343,6 +343,7 @@
       documentoOficial: true,
       biometriaFacial: true,
       planilhaResumo: true,
+      listaPendentesTxt: true,
       extratoConsignadoPdf: false,
       hiscrePdfUnico: true,
       hiscrePlanilhaExcel: true,
@@ -1033,6 +1034,29 @@
     return `${getClientBaseFolder()}/NB ${formatNb(state.nb)}`;
   }
 
+  function isContractMissingCopy(contract) {
+    if (globalThis.EXTRATOR_INSS_CSV && typeof globalThis.EXTRATOR_INSS_CSV.isContractSemCopia === 'function') {
+      return globalThis.EXTRATOR_INSS_CSV.isContractSemCopia(contract);
+    }
+    const st = contract && contract.downloadStatus;
+    return Boolean(st && (st.contratoPdf === 'Sem cópia' || st.state === 'nocopy'));
+  }
+
+  async function downloadPendingContractsTxt(folderOverride) {
+    const nbFolder = folderOverride || getNbFolder();
+    const res = globalThis.EXTRATOR_INSS_CSV.generateContratosPendentesTxt(state.contracts, {
+      cliente: state.clientName,
+      nb: state.nb,
+      nbFormatted: formatNb(state.nb)
+    });
+    if (!res || res.count === 0 || !res.dataUrl) {
+      return { count: 0, bankCount: 0, filename: '' };
+    }
+    const filename = `${nbFolder}/CONTRATOS-PENDENTES.txt`;
+    await downloadViaBackground(res.dataUrl, filename);
+    return { count: res.count, bankCount: res.bankCount, filename };
+  }
+
   async function downloadContractsBatch(onlyErrors = false) {
     if (state.running) return;
     if (!state.nb) {
@@ -1270,12 +1294,28 @@
         }
       }
 
+      // 4) Lista única CONTRATOS-PENDENTES.txt com os bancos sem cópia do contrato
+      let pendentesSaved = null;
+      if (state.opts.listaPendentesTxt && !state.cancelRequested) {
+        const missingCount = state.contracts.filter(isContractMissingCopy).length;
+        if (missingCount > 0) {
+          state.progressTitle = 'Contratos pendentes';
+          state.progressStatus = `Gerando CONTRATOS-PENDENTES.txt (${missingCount} sem cópia)...`;
+          render();
+          pendentesSaved = await downloadPendingContractsTxt(nbFolder);
+        }
+      }
+
       if (!state.cancelRequested) {
         const errCount = state.contracts.filter((c) => c.downloadStatus && c.downloadStatus.state === 'error').length;
+        const pendMsg =
+          pendentesSaved && pendentesSaved.count > 0
+            ? ` · ${pendentesSaved.count} sem cópia em CONTRATOS-PENDENTES.txt (${pendentesSaved.bankCount} banco(s))`
+            : '';
         state.phase = errCount > 0 ? 'error' : 'completed';
         state.bannerNotice = errCount > 0
-          ? { type: 'warn', text: `Concluído com ${errCount} erro(s) técnico(s). Use o botão "Repetir erros técnicos".` }
-          : { type: 'ok', text: `Arquivos salvos em Downloads/${nbFolder}/` };
+          ? { type: 'warn', text: `Concluído com ${errCount} erro(s) técnico(s)${pendMsg}. Use o botão "Repetir erros".` }
+          : { type: 'ok', text: `Arquivos salvos em Downloads/${nbFolder}/${pendMsg}` };
       } else {
         state.phase = 'idle';
       }
@@ -1587,6 +1627,7 @@
   function buildAgentStateSnapshot() {
     const okCount = state.contracts.filter((c) => c.downloadStatus && c.downloadStatus.state === 'ok').length;
     const nocopyCount = state.contracts.filter((c) => c.downloadStatus && c.downloadStatus.state === 'nocopy').length;
+    const missingCopyCount = state.contracts.filter(isContractMissingCopy).length;
     const errCount = state.contracts.filter((c) => c.downloadStatus && c.downloadStatus.state === 'error').length;
     const chunks = buildTwelveMonthChunks(
       state.period.startYear,
@@ -1598,7 +1639,7 @@
     return {
       ready: true,
       name: 'INSS Extractor by FonCK',
-      version: '2.2.0',
+      version: '2.4.0',
       theme: state.theme,
       open: state.open,
       activeTab: state.activeTab,
@@ -1625,7 +1666,7 @@
       progressTitle: state.progressTitle,
       progressStatus: state.progressStatus,
       downloadBaseFolder: `Downloads/${getClientBaseFolder()}/`,
-      summary: { ok: okCount, nocopy: nocopyCount, error: errCount },
+      summary: { ok: okCount, nocopy: nocopyCount, missingContractCopy: missingCopyCount, error: errCount },
       savedFiles: [...state.savedFiles],
       notice: state.bannerNotice
     };
@@ -1664,6 +1705,7 @@
     );
     const oldestDiscount = findOldestDiscountStart(state.contracts);
     const errorCount = state.contracts.filter((c) => c.downloadStatus && c.downloadStatus.state === 'error').length;
+    const missingCopyCount = state.contracts.filter(isContractMissingCopy).length;
     const visibleContracts = state.filterErrorsOnly
       ? state.contracts.filter((c) => c.downloadStatus && c.downloadStatus.state === 'error')
       : state.contracts;
@@ -1676,7 +1718,7 @@
           <div class="panel-tit">
             <span class="ico-circle">${DOWNLOAD_SVG}</span>
             <span class="tit-stack">
-              <span class="tit-eyebrow">Open Source · v2.2.0</span>
+              <span class="tit-eyebrow">Open Source · v2.4.0</span>
               <span class="tit-name">INSS Extractor by FonCK</span>
             </span>
           </div>
@@ -1768,10 +1810,16 @@
               <label class="chk"><input type="checkbox" data-opt="biometriaFacial" ${state.opts.biometriaFacial ? 'checked' : ''} ${state.running ? 'disabled' : ''}>Biometria facial</label>
               <label class="chk"><input type="checkbox" data-opt="planilhaResumo" ${state.opts.planilhaResumo ? 'checked' : ''} ${state.running ? 'disabled' : ''}>Planilha resumo</label>
             </div>
-            <label class="chk" style="margin-top:-4px">
-              <input type="checkbox" data-opt="extratoConsignadoPdf" ${state.opts.extratoConsignadoPdf ? 'checked' : ''} ${state.running ? 'disabled' : ''}>
-              Incluir PDF geral do Extrato Consignado (todos)
-            </label>
+            <div class="checks single" style="margin-top:-3px">
+              <label class="chk">
+                <input type="checkbox" data-opt="listaPendentesTxt" ${state.opts.listaPendentesTxt ? 'checked' : ''} ${state.running ? 'disabled' : ''}>
+                Gerar <b>CONTRATOS-PENDENTES.txt</b> (bancos sem cópia)
+              </label>
+              <label class="chk">
+                <input type="checkbox" data-opt="extratoConsignadoPdf" ${state.opts.extratoConsignadoPdf ? 'checked' : ''} ${state.running ? 'disabled' : ''}>
+                Incluir PDF geral do Extrato Consignado (todos)
+              </label>
+            </div>
 
             <button id="btn-dl-contratos" class="btn-primary" type="button" ${state.running || !isLoggedIn || !state.contracts.length ? 'disabled' : ''}>
               Baixar ${state.contracts.length} contrato(s)
@@ -1783,10 +1831,15 @@
             ${state.contracts.length > 0 ? `
               <div class="results-hdr">
                 <span style="font-size:12px;font-weight:700;color:var(--grafite)">Contratos do benefício</span>
-                ${errorCount > 0 ? `
-                  <div style="display:flex;gap:6px;align-items:center">
-                    <button id="btn-filter-err" class="btn-small" type="button">${state.filterErrorsOnly ? 'Mostrar todos' : `Só erros (${errorCount})`}</button>
-                    <button id="btn-retry-err" class="btn-danger" type="button" ${state.running ? 'disabled' : ''}>Repetir erros</button>
+                ${(missingCopyCount > 0 || errorCount > 0) ? `
+                  <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+                    ${missingCopyCount > 0 ? `
+                      <button id="btn-dl-pendentes" class="btn-small" type="button" ${state.running ? 'disabled' : ''} title="Baixar CONTRATOS-PENDENTES.txt com os bancos sem cópia">PENDENTES.txt (${missingCopyCount})</button>
+                    ` : ''}
+                    ${errorCount > 0 ? `
+                      <button id="btn-filter-err" class="btn-small" type="button">${state.filterErrorsOnly ? 'Mostrar todos' : `Só erros (${errorCount})`}</button>
+                      <button id="btn-retry-err" class="btn-danger" type="button" ${state.running ? 'disabled' : ''}>Repetir erros</button>
+                    ` : ''}
                   </div>
                 ` : ''}
               </div>
@@ -1936,6 +1989,26 @@
 
     const dlAmbosBtn = byId('btn-dl-ambos');
     if (dlAmbosBtn) dlAmbosBtn.addEventListener('click', () => downloadContractsAndExtrato());
+
+    const dlPendentesBtn = byId('btn-dl-pendentes');
+    if (dlPendentesBtn) {
+      dlPendentesBtn.addEventListener('click', async () => {
+        try {
+          const res = await downloadPendingContractsTxt();
+          if (res.count > 0) {
+            state.bannerNotice = {
+              type: 'ok',
+              text: `CONTRATOS-PENDENTES.txt salvo em Downloads/${getNbFolder()}/ (${res.count} contrato(s) em ${res.bankCount} banco(s)).`
+            };
+          } else {
+            state.bannerNotice = { type: 'ok', text: 'Nenhum contrato sem cópia pendente no momento.' };
+          }
+        } catch (err) {
+          state.bannerNotice = { type: 'error', text: err.message || String(err) };
+        }
+        render();
+      });
+    }
 
     const filterErrBtn = byId('btn-filter-err');
     if (filterErrBtn) {

@@ -1,6 +1,7 @@
-// Geradores de planilhas CSV prontas para Excel PT-BR (UTF-8 com BOM + separador ';')
-// 1) Resumo dos contratos.csv
+// Geradores de relatórios e planilhas prontos para Windows/Excel PT-BR (UTF-8 com BOM)
+// 1) Resumo dos contratos.csv (separador ';')
 // 2) Extrato de pagamento MM-YYYY a MM-YYYY.csv (mês a mês, uma coluna por rubrica)
+// 3) CONTRATOS-PENDENTES.txt (lista única agrupada por banco dos contratos sem cópia)
 
 (function (global) {
   'use strict';
@@ -49,6 +50,136 @@
     const bytes = new TextEncoder().encode(csvText);
     const base64 = global.EXTRATOR_INSS_PDF.uint8ArrayToBase64(bytes);
     return `data:text/csv;charset=utf-8;base64,${base64}`;
+  }
+
+  function buildTextDataUrl(text) {
+    const utf8Text = '\uFEFF' + String(text || '');
+    const bytes = new TextEncoder().encode(utf8Text);
+    const base64 = global.EXTRATOR_INSS_PDF.uint8ArrayToBase64(bytes);
+    return `data:text/plain;charset=utf-8;base64,${base64}`;
+  }
+
+  function formatMoneyDisplayBR(val) {
+    if (val === null || val === undefined || val === '') return '-';
+    const num = typeof val === 'number' ? val : Number(String(val).replace(',', '.'));
+    if (!Number.isFinite(num)) return String(val);
+    const [intPart, decPart] = num.toFixed(2).split('.');
+    const intFormatted = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return `R$ ${intFormatted},${decPart}`;
+  }
+
+  function formatTimestampBR(dateObj) {
+    const dt = dateObj instanceof Date ? dateObj : new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${pad(dt.getDate())}/${pad(dt.getMonth() + 1)}/${dt.getFullYear()} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+  }
+
+  function isContractSemCopia(contract) {
+    const st = contract && contract.downloadStatus;
+    if (!st) return false;
+    return st.contratoPdf === 'Sem cópia' || st.state === 'nocopy';
+  }
+
+  // Relatório único: CONTRATOS-PENDENTES.txt (agrupado por banco)
+  function generateContratosPendentesTxt(contracts, meta = {}) {
+    const list = Array.isArray(contracts) ? contracts.filter(isContractSemCopia) : [];
+    if (!list.length) {
+      return { count: 0, bankCount: 0, banks: [], text: '', dataUrl: null };
+    }
+
+    const bankMap = new Map();
+    for (const c of list) {
+      const cbc = String(c.cbc || '').trim();
+      const banco = String(c.banco || (cbc ? `BANCO ${cbc}` : 'BANCO NÃO INFORMADO')).trim();
+      const key = `${cbc}|${banco.toUpperCase()}`;
+      if (!bankMap.has(key)) {
+        bankMap.set(key, { cbc, banco, items: [] });
+      }
+      bankMap.get(key).items.push(c);
+    }
+
+    const groups = Array.from(bankMap.values()).sort((a, b) =>
+      a.banco.localeCompare(b.banco, 'pt-BR', { sensitivity: 'base' })
+    );
+
+    for (const g of groups) {
+      g.items.sort((a, b) => {
+        const da = String(b.dateIso || '').localeCompare(String(a.dateIso || ''));
+        if (da !== 0) return da;
+        return String(a.numeroContrato || '').localeCompare(String(b.numeroContrato || ''));
+      });
+    }
+
+    const sep = '='.repeat(72);
+    const subSep = '-'.repeat(72);
+    const cliente = (meta && meta.cliente) || 'NÃO INFORMADO';
+    const nb = (meta && (meta.nbFormatted || meta.nb)) || 'NÃO INFORMADO';
+    const generatedAt = (meta && meta.generatedAt) || formatTimestampBR(new Date());
+
+    const lines = [
+      'CONTRATOS PENDENTES — BANCOS SEM CÓPIA DO CONTRATO NO MEU INSS',
+      sep,
+      `Cliente: ${cliente}`,
+      `Benefício (NB): ${nb}`,
+      `Data da consulta: ${generatedAt}`,
+      `Total sem cópia: ${list.length} contrato(s) em ${groups.length} banco(s)`,
+      sep,
+      '',
+      'RESUMO POR BANCO',
+      subSep
+    ];
+
+    for (const g of groups) {
+      const prefix = g.cbc ? `[${g.cbc}] ` : '';
+      const tipos = Array.from(new Set(g.items.map((it) => it.tipoLabel || 'Empréstimo'))).join(', ');
+      lines.push(`- ${prefix}${g.banco} — ${g.items.length} contrato(s) sem cópia (${tipos})`);
+    }
+
+    lines.push('', 'LISTA DETALHADA POR BANCO', subSep);
+
+    for (const g of groups) {
+      const prefix = g.cbc ? `[${g.cbc}] ` : '';
+      lines.push('', `${prefix}${g.banco} (${g.items.length} contrato(s))`);
+
+      g.items.forEach((c, idx) => {
+        const st = c.downloadStatus || {};
+        const tipo = c.tipoLabel || 'Empréstimo';
+        const situacao = c.situacao || 'Indefinida';
+        const dataInc = formatDateBR(c.dataInclusao) || '-';
+        const compIni = formatCompetencia(c.competenciaInicioDesconto);
+        const compFim = formatCompetencia(c.competenciaFimDesconto);
+        const desconto = compIni && compFim ? `${compIni} a ${compFim}` : (compIni || compFim || '-');
+        const parcelas =
+          c.quantidadeParcelas !== undefined && c.quantidadeParcelas !== null && c.quantidadeParcelas !== ''
+            ? String(c.quantidadeParcelas)
+            : '-';
+        const vParcela = formatMoneyDisplayBR(c.valorParcela);
+        const vEmprestado = formatMoneyDisplayBR(c.valorEmprestado);
+        const stContrato = st.contratoPdf || 'Sem cópia';
+        const stId = st.dadosIdPdf || '-';
+
+        lines.push(`  ${idx + 1}. Contrato nº ${c.numeroContrato || 'SEM_NUMERO'} | ${tipo} | ${situacao}`);
+        lines.push(`     Inclusão: ${dataInc} | Desconto: ${desconto} | Parcelas: ${parcelas}`);
+        lines.push(`     Parcela/Reservado: ${vParcela} | Emprestado/Limite: ${vEmprestado}`);
+        lines.push(`     Status: Contrato PDF: ${stContrato} | Dados Identificação: ${stId}`);
+        if (idx < g.items.length - 1) lines.push('');
+      });
+    }
+
+    lines.push(
+      '',
+      sep,
+      'Gerado localmente pelo INSS Extractor by FonCK (Licença MIT)'
+    );
+
+    const text = lines.join('\r\n');
+    return {
+      count: list.length,
+      bankCount: groups.length,
+      banks: groups.map((g) => ({ cbc: g.cbc, banco: g.banco, count: g.items.length })),
+      text,
+      dataUrl: buildTextDataUrl(text)
+    };
   }
 
   // Planilha 1: Resumo dos contratos.csv
@@ -231,6 +362,8 @@
   global.EXTRATOR_INSS_CSV = {
     generateContratosResumoCsv,
     generateHiscreRubricasCsv,
+    generateContratosPendentesTxt,
+    isContractSemCopia,
     formatMoneyBR,
     formatDateBR,
     formatCompetencia

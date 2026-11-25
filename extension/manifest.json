@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "INSS Extractor by FonCK",
-  "version": "2.2.0",
+  "version": "2.4.0",
   "description": "Open Source e 100% gratuito — Baixa contratos consignados renomeados (Empréstimos, RMC, RCC) e extrato de pagamento completo desde 06/1994.",
   "homepage_url": "https://inss-extractor-by-fonck-site.vercel.app/",
   "icons": {

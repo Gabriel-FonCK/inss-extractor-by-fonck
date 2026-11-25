@@ -1,4 +1,4 @@
-# INSS Extractor by FonCK (Open Source · v2.2.0)
+# INSS Extractor by FonCK (Open Source · v2.4.0)
 
 [![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-111111.svg)](LICENSE)
 [![Manifest V3](https://img.shields.io/badge/Chrome%20%26%20Edge-Manifest%20V3-2456d6.svg)](extension/manifest.json)
@@ -7,7 +7,7 @@ Extensão gratuita e **open source** desenvolvida por **Gabriel Fonseca (FonCK)*
 
 - **Contratos Consignados** separados automaticamente em `Empréstimos/`, `Cartão RMC/` e `Cartão RCC/`
 - **Contratos já renomeados** no formato `01Jan21 - GABRIEL FONSECA BANCO - 0000102030.pdf`
-- **Documento Oficial (frente/verso)**, **Biometria Facial**, `Resumo dos contratos.csv` e `Resumo Cartões RMC e RCC.csv`
+- **Documento Oficial (frente/verso)**, **Biometria Facial**, `Resumo dos contratos.csv`, `Resumo Cartões RMC e RCC.csv` e lista única `CONTRATOS-PENDENTES.txt` agrupada por banco para contratos sem cópia
 - **Extrato de Pagamento (HISCRE)** completo desde o **1º extrato possível (`06/1994`)**, pulando anos vazios, salvo de **12 em 12 meses** + **PDF único unificado** + **planilha Excel por rubricas**
 - **Visual Editorial Minimalista** com **Tema Claro** e **Tema Escuro** (`☀ / ☾`)
 - **Skill de IA inclusa (`extension/skill-ia/`)** pronta para **Claude** e **ChatGPT** operarem a extensão sem cliques manuais via `window.EXTRATOR_MEU_INSS`

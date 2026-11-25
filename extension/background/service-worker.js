@@ -1,6 +1,6 @@
 'use strict';
 
-// Background Service Worker (Manifest V3) — INSS Extractor by FonCK (v2.2.0)
+// Background Service Worker (Manifest V3) — INSS Extractor by FonCK (v2.4.0)
 // Gerencia downloads organizados em Downloads/Contratos INSS/ com conflictAction: 'overwrite'
 // e abre a página de boas-vindas (welcome/welcome.html) ao instalar a extensão.
 

@@ -1,6 +1,6 @@
 'use strict';
 
-// INSS Extractor by FonCK (v2.2.0) — Editorial Interactive Product Layer
+// INSS Extractor by FonCK (v2.4.0) — Editorial Interactive Product Layer
 
 const PIX_KEY = '+5521964842518';
 const prefersReducedMotion =
@@ -166,7 +166,7 @@ const simSequence = [
     pct: 100,
     saved: 3,
     csv: 2,
-    title: 'Lote concluído · Sem cópia registrado em CSV PT-BR',
+    title: 'Lote concluído · Sem cópia salvo em CONTRATOS-PENDENTES.txt',
     status: 'Lote concluído',
     pillText: 'Pronto'
   }
@@ -430,7 +430,7 @@ const tutorialDecks = {
     ]
   },
   usar: {
-    label: 'Uso no Meu INSS · v2.2.0',
+    label: 'Uso no Meu INSS · v2.4.0',
     slides: [
       {
         title: '01 — Acesse o Meu INSS',
@@ -466,6 +466,7 @@ const tutorialDecks = {
               <tr><td>Biometria facial</td><td>Extrair registros de biometria disponíveis.</td></tr>
               <tr><td>Documento oficial</td><td>Baixar documentos oficiais (frente e verso).</td></tr>
               <tr><td>Planilha resumo</td><td>Consolidar informações em planilhas Excel PT-BR.</td></tr>
+              <tr><td>CONTRATOS-PENDENTES.txt</td><td>Lista única agrupada por banco dos contratos sem cópia.</td></tr>
               <tr><td>PDF geral Consignado</td><td>Incluir o extrato geral de empréstimos consignados.</td></tr>
             </tbody>
           </table>
@@ -1015,7 +1016,7 @@ function showToast({ title, detail = '', actionLabel = '', onAction = null, dura
 document.querySelectorAll('[data-dl-ext]').forEach((lnk) => {
   lnk.addEventListener('click', () => {
     showToast({
-      title: 'Download iniciado · v2.2.0 (.zip)',
+      title: 'Download iniciado · v2.4.0 (.zip)',
       detail: 'Extraia a pasta e siga os slides de instalação em 1 minuto.',
       actionLabel: 'Ver slides →',
       duration: 5200,
@@ -1164,7 +1165,7 @@ const btnCmdk = document.getElementById('btn-cmdk');
 const cmdkCommands = [
   {
     id: 'download',
-    title: 'Baixar extensão (.zip v2.2.0)',
+    title: 'Baixar extensão (.zip v2.4.0)',
     sub: 'Download direto · Chrome e Microsoft Edge',
     tag: 'Download',
     keys: 'baixar download zip extensao instalar',

@@ -1,4 +1,4 @@
-// Configuração central — INSS Extractor by FonCK (v2.2.0 Open Source)
+// Configuração central — INSS Extractor by FonCK (v2.4.0 Open Source)
 (function (root) {
   'use strict';
 
@@ -6,7 +6,7 @@
     brandName: 'INSS Extractor by FonCK',
     shortName: 'INSS Extractor',
     authorName: 'Gabriel Fonseca',
-    version: '2.2.0',
+    version: '2.4.0',
     siteUrl: 'https://inss-extractor-by-fonck-site.vercel.app/',
     linkedinUrl: 'https://www.linkedin.com/in/fonck',
     linkedinHandle: 'linkedin.com/in/fonck',
