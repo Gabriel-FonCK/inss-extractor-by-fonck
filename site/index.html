@@ -45,11 +45,9 @@
       </a>
 
       <nav class="nav-links" aria-label="Navegação principal">
-        <a class="nav-link" href="#tutoriais">Tutoriais</a>
-        <a class="nav-link" href="#impacto">Antes &amp; Depois</a>
+        <a class="nav-link" href="#instalar">Instalar</a>
+        <a class="nav-link" href="#usar">Como usar</a>
         <a class="nav-link" href="#ia">Automação IA</a>
-        <a class="nav-link" href="#personalizar">Personalizar MIT</a>
-        <a class="nav-link" href="#seguranca">Segurança</a>
         <a class="nav-link" href="#consultoria">Consultoria</a>
       </nav>
 
@@ -76,12 +74,11 @@
 
   <div id="mobile-sheet" class="mobile-sheet" aria-hidden="true">
     <nav aria-label="Menu mobile">
-      <a href="#tutoriais" data-open-deck="instalar">Como instalar (9 slides)</a>
-      <a href="#tutoriais" data-open-deck="usar">Como usar (5 slides)</a>
       <a href="#impacto">Antes &amp; Depois</a>
+      <a href="#instalar">Como instalar</a>
+      <a href="#usar">Como usar</a>
       <a href="#ia">Automação com IA</a>
       <a href="#personalizar">Personalizar (MIT)</a>
-      <a href="#seguranca">Segurança</a>
       <a href="#consultoria">Consultoria e Pix</a>
     </nav>
     <a class="btn btn--signature" href="downloads/inss-extractor-by-fonck-v2.4.0.zip" download data-dl-ext>
@@ -366,127 +363,16 @@
       </div>
     </section>
 
-    <!-- ── SCREEN 2: CENTRO DE TUTORIAIS EM SLIDES (SPLIT 40/60 + LIGHTBOX) ── -->
-    <section id="tutoriais" class="band band--surface" aria-labelledby="tut-h">
-      <span id="instalar" class="anchor-alias" aria-hidden="true"></span>
-      <span id="usar" class="anchor-alias" aria-hidden="true"></span>
-      <div class="wrap">
-        <div class="tut-head" data-reveal>
-          <div class="tut-head-title">
-            <span class="sec-kicker">01 · Guia prático em slides</span>
-            <h2 id="tut-h" class="h2">Como instalar e usar. <span class="muted">Passo a passo sem rolar.</span></h2>
-          </div>
-
-          <div class="tut-deck-switch">
-            <div class="sliding-tabs sliding-tabs--deck" role="tablist" aria-label="Escolha o tutorial em slides" data-tab-group="tutorial-deck">
-              <span class="sliding-tab-pill" aria-hidden="true"></span>
-              <button class="sliding-tab" role="tab" aria-selected="true" data-deck="instalar" type="button">
-                <img class="tool-ico" src="assets/icons/chrome.svg" alt="" width="16" height="16">
-                <span>Como instalar</span>
-                <small class="deck-count">9 slides</small>
-              </button>
-              <button class="sliding-tab" role="tab" aria-selected="false" data-deck="usar" type="button">
-                <img class="tool-ico" src="assets/app-icon.png" alt="" width="16" height="16" style="border-radius:4px">
-                <span>Como usar</span>
-                <small class="deck-count">5 slides</small>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div id="tutorial-stage" class="tut-stage spotlight-card" data-reveal style="--reveal-delay:70ms" role="region" aria-label="Apresentação interativa do tutorial">
-          <div class="tut-progress-bar" aria-hidden="true">
-            <div id="tut-progress-fill" class="tut-progress-fill"></div>
-          </div>
-
-          <div class="tut-split">
-            <!-- Left 40%: Numbered Step, Copy, Table/Security & Controls -->
-            <div class="tut-panel">
-              <div class="tut-panel-top">
-                <div class="tut-meta-row">
-                  <span id="tut-step-counter" class="pill pill--accent">01 / 09</span>
-                  <span id="tut-deck-label" class="tut-deck-tag">Instalação · Chrome &amp; Edge</span>
-                </div>
-
-                <h3 id="tut-slide-title" class="tut-title"></h3>
-                <div id="tut-slide-body" class="tut-body"></div>
-              </div>
-
-              <div class="tut-panel-foot">
-                <div class="tut-nav-btns">
-                  <button id="tut-prev" class="btn btn--secondary btn--sm" type="button" aria-label="Slide anterior">
-                    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
-                    <span>Anterior</span>
-                  </button>
-                  <button id="tut-next" class="btn btn--accent btn--sm" type="button" aria-label="Próximo slide">
-                    <span id="tut-next-lbl">Próximo</span>
-                    <svg class="m-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
-                  </button>
-                </div>
-                <span class="tut-kbd-hint">Use as setas <kbd>←</kbd> <kbd>→</kbd> ou clique na imagem para ampliar</span>
-              </div>
-            </div>
-
-            <!-- Right 60%: Framed Screenshot Stage + Click-to-Zoom + Step Strip -->
-            <div class="tut-media-col">
-              <div id="tut-viewport" class="tut-viewport">
-                <button id="tut-zoom-trigger" class="tut-img-btn" type="button" aria-label="Ampliar imagem do slide em tela cheia">
-                  <img id="tut-slide-img" class="tut-img" src="assets/tutorial/inst-01-download.png" alt="Passo 01 da instalação" decoding="async">
-                  <span class="tut-zoom-pill" aria-hidden="true">
-                    <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-                    Ampliar
-                  </span>
-                </button>
-              </div>
-
-              <div class="tut-caption-bar">
-                <span id="tut-slide-caption" class="tut-caption"></span>
-                <div id="tut-dots" class="tut-dots" role="tablist" aria-label="Ir para o slide"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Fullscreen Accessible Lightbox Modal -->
-    <div id="tut-lightbox" class="lightbox" role="dialog" aria-modal="true" aria-labelledby="lb-title" aria-hidden="true">
-      <div class="lightbox-backdrop" data-lb-close></div>
-      <div class="lightbox-shell">
-        <div class="lightbox-bar">
-          <div class="lightbox-info">
-            <span id="lb-counter" class="pill pill--accent">01 / 09</span>
-            <strong id="lb-title"></strong>
-          </div>
-          <div class="lightbox-actions">
-            <button id="lb-prev" class="lb-icon-btn" type="button" aria-label="Imagem anterior">
-              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
-            </button>
-            <button id="lb-next" class="lb-icon-btn" type="button" aria-label="Próxima imagem">
-              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
-            </button>
-            <button id="lb-close" class="lb-icon-btn lb-icon-btn--close" type="button" aria-label="Fechar visualização ampliada" data-lb-close>
-              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-          </div>
-        </div>
-        <div class="lightbox-stage">
-          <img id="lb-img" src="" alt="">
-        </div>
-        <p id="lb-caption" class="lightbox-caption"></p>
-      </div>
-    </div>
-
-    <!-- ── SCREEN 3: SIGNATURE MOMENT — ANTES VS DEPOIS CURTAIN + TIME CALCULATOR ── -->
-    <section id="impacto" class="band" aria-labelledby="impacto-h">
+    <!-- ── SCREEN 2: ANTES VS DEPOIS (SCANNER VERTICAL + CALCULADORA) ── -->
+    <section id="impacto" class="band band--surface" aria-labelledby="impacto-h">
       <div class="wrap">
         <div class="sec-head" data-reveal>
           <div class="sec-head-title">
-            <span class="sec-kicker">02 · Experiência real · Antes &amp; Depois</span>
+            <span class="sec-kicker">01 · Antes &amp; Depois</span>
             <h2 id="impacto-h" class="h2">Arraste a cortina. <span class="muted">De 42 minutos para 1 clique.</span></h2>
           </div>
           <div class="sec-head-side">
-            <p class="body-text">Compare a pasta Downloads feita manualmente no Meu INSS com a entrega organizada da extensão — e estime quantas horas sua equipe recupera por mês.</p>
+            <p class="body-text">Compare a pasta manual do Meu INSS com a entrega automática da extensão e calcule o tempo recuperado.</p>
           </div>
         </div>
 
@@ -682,6 +568,128 @@
       </div>
     </section>
 
+    <!-- ── SCREEN 3: COMO INSTALAR (GALERIA CLEAN ESTILO APPLE/STRIPE) ── -->
+    <section id="instalar" class="band band--gallery" aria-labelledby="instalar-h">
+      <div class="wrap">
+        <div class="gal-head" data-reveal>
+          <div>
+            <span class="sec-kicker">02 · Instalação · Chrome &amp; Edge</span>
+            <h2 id="instalar-h" class="h2">Como instalar. <span class="muted">Em 1 minuto.</span></h2>
+          </div>
+          <div class="gal-controls" aria-label="Navegação do guia de instalação">
+            <span class="gal-counter" data-gal-counter="instalar">01 / 09</span>
+            <button class="gal-circle-btn" type="button" data-gal-prev="instalar" aria-label="Passo anterior da instalação">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="gal-circle-btn" type="button" data-gal-next="instalar" aria-label="Próximo passo da instalação">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="gal-card" data-gallery="instalar" data-reveal style="--reveal-delay:60ms">
+          <div class="gal-stage" data-gal-stage="instalar">
+            <button class="gal-edge-nav gal-edge-nav--prev" type="button" data-gal-prev="instalar" aria-label="Slide anterior">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="gal-img-trigger" type="button" data-gal-zoom="instalar" aria-label="Ampliar imagem da instalação">
+              <img class="gal-img" data-gal-img="instalar" src="assets/tutorial/inst-01-download.png" alt="Passo 01 da instalação" decoding="async">
+              <span class="gal-zoom-badge" aria-hidden="true">
+                <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              </span>
+            </button>
+            <button class="gal-edge-nav gal-edge-nav--next" type="button" data-gal-next="instalar" aria-label="Próximo slide">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+
+          <div class="gal-footer">
+            <div class="gal-copy" data-gal-copy="instalar">
+              <h3 class="gal-title" data-gal-title="instalar"></h3>
+              <p class="gal-desc" data-gal-desc="instalar"></p>
+              <div class="gal-extra" data-gal-extra="instalar"></div>
+            </div>
+            <div class="gal-dots" data-gal-dots="instalar" role="tablist" aria-label="Passos da instalação"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SCREEN 4: COMO USAR (GALERIA CLEAN ESTILO APPLE/STRIPE) ── -->
+    <section id="usar" class="band band--surface band--gallery" aria-labelledby="usar-h">
+      <div class="wrap">
+        <div class="gal-head" data-reveal>
+          <div>
+            <span class="sec-kicker">03 · Na prática · 5 passos</span>
+            <h2 id="usar-h" class="h2">Como usar. <span class="muted">Direto no Meu INSS.</span></h2>
+          </div>
+          <div class="gal-controls" aria-label="Navegação do guia de uso">
+            <span class="gal-counter" data-gal-counter="usar">01 / 05</span>
+            <button class="gal-circle-btn" type="button" data-gal-prev="usar" aria-label="Passo anterior de uso">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="gal-circle-btn" type="button" data-gal-next="usar" aria-label="Próximo passo de uso">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="gal-card" data-gallery="usar" data-reveal style="--reveal-delay:60ms">
+          <div class="gal-stage" data-gal-stage="usar">
+            <button class="gal-edge-nav gal-edge-nav--prev" type="button" data-gal-prev="usar" aria-label="Slide anterior">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="gal-img-trigger" type="button" data-gal-zoom="usar" aria-label="Ampliar imagem do uso">
+              <img class="gal-img" data-gal-img="usar" src="assets/tutorial/uso-01-login.png" alt="Passo 01 de uso no Meu INSS" decoding="async">
+              <span class="gal-zoom-badge" aria-hidden="true">
+                <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              </span>
+            </button>
+            <button class="gal-edge-nav gal-edge-nav--next" type="button" data-gal-next="usar" aria-label="Próximo slide">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+
+          <div class="gal-footer">
+            <div class="gal-copy" data-gal-copy="usar">
+              <h3 class="gal-title" data-gal-title="usar"></h3>
+              <p class="gal-desc" data-gal-desc="usar"></p>
+              <div class="gal-extra" data-gal-extra="usar"></div>
+            </div>
+            <div class="gal-dots" data-gal-dots="usar" role="tablist" aria-label="Passos de uso"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Fullscreen Accessible Lightbox Modal (shared by Instalar & Usar galleries) -->
+    <div id="tut-lightbox" class="lightbox" role="dialog" aria-modal="true" aria-labelledby="lb-title" aria-hidden="true">
+      <div class="lightbox-backdrop" data-lb-close></div>
+      <div class="lightbox-shell">
+        <div class="lightbox-bar">
+          <div class="lightbox-info">
+            <span id="lb-counter" class="pill pill--accent">01 / 09</span>
+            <strong id="lb-title"></strong>
+          </div>
+          <div class="lightbox-actions">
+            <button id="lb-prev" class="lb-icon-btn" type="button" aria-label="Imagem anterior">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
+            </button>
+            <button id="lb-next" class="lb-icon-btn" type="button" aria-label="Próxima imagem">
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+            </button>
+            <button id="lb-close" class="lb-icon-btn lb-icon-btn--close" type="button" aria-label="Fechar visualização ampliada" data-lb-close>
+              <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="lightbox-stage">
+          <img id="lb-img" src="" alt="">
+        </div>
+        <p id="lb-caption" class="lightbox-caption"></p>
+      </div>
+    </div>
+
     <!-- ── SCREEN 4: PEAK OBSIDIAN BAND — SCROLL WORD-HIGHLIGHT & AI SKILL ── -->
     <section id="ia" class="band band--inverse" aria-labelledby="ia-h">
       <div class="wrap">
@@ -762,16 +770,16 @@
       </div>
     </section>
 
-    <!-- ── SCREEN 5: INTERACTIVE MIT + AI OFFICE CUSTOMIZATION BUILDER ── -->
-    <section id="personalizar" class="band band--surface" aria-labelledby="mit-h">
+    <!-- ── SCREEN 6: INTERACTIVE MIT + AI OFFICE CUSTOMIZATION BUILDER ── -->
+    <section id="personalizar" class="band" aria-labelledby="mit-h">
       <div class="wrap">
         <div class="sec-head" data-reveal>
           <div class="sec-head-title">
-            <span class="sec-kicker">03 · Código aberto · Licença MIT</span>
+            <span class="sec-kicker">05 · Código aberto · Licença MIT</span>
             <h2 id="mit-h" class="h2">Personalize com IA <span class="muted">para o seu escritório.</span></h2>
           </div>
           <div class="sec-head-side">
-            <p class="body-text">Por ser <b>Licença MIT</b>, você pode modificar livremente a extensão com Claude, ChatGPT ou Cursor. Marque abaixo o que deseja adaptar e copie o prompt técnico pronto.</p>
+            <p class="body-text">Marque o que deseja adaptar e copie o prompt pronto para Claude, ChatGPT ou Cursor.</p>
           </div>
         </div>
 
@@ -877,14 +885,14 @@
       </div>
     </section>
 
-    <!-- ── SCREEN 6: CALM SECURITY SPEC ROWS ── -->
-    <section id="seguranca" class="band" aria-labelledby="seg-h">
+    <!-- ── SCREEN 7: CALM SECURITY SPEC ROWS ── -->
+    <section id="seguranca" class="band band--surface" aria-labelledby="seg-h">
       <div class="wrap">
         <div class="spec-layout">
           <div class="spec-intro" data-reveal>
-            <span class="sec-kicker">04 · Privacidade &amp; auditoria</span>
+            <span class="sec-kicker">06 · Privacidade &amp; auditoria</span>
             <h2 id="seg-h" class="h2">Segurança verificável no código.</h2>
-            <p class="body-text">Projeto open source (MIT) para auditar cada linha antes de instalar no escritório.</p>
+            <p class="body-text">Open source (MIT) para auditar cada linha antes de instalar.</p>
             <div>
               <a class="text-link" href="https://github.com/Gabriel-FonCK/inss-extractor-by-fonck/blob/main/SECURITY.md" target="_blank" rel="noopener">
                 Ler SECURITY.md no GitHub

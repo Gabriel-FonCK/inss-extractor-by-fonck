@@ -479,215 +479,115 @@ if (!prefersReducedMotion && heroAppFrame && 'IntersectionObserver' in window) {
   }, 900);
 }
 
-// ── 6. Centro de Tutoriais em Slides (Como instalar · 9 | Como usar · 5) ─────
-const tutorialDecks = {
+// ── 6. Independent Apple/Stripe Galleries (#instalar & #usar + Lightbox) ─────
+const galleryDecks = {
   instalar: {
-    label: 'Instalação · Chrome & Edge',
     slides: [
       {
         title: '01 — Baixe a extensão (.zip)',
         img: 'assets/tutorial/inst-01-download.png',
         alt: 'Download concluído do arquivo zip da extensão no navegador com botão Mostrar na pasta',
-        caption: 'Clique em "Baixar extensão (.zip)" no topo do site e depois em "Mostrar na pasta".',
-        body: `
-          <p>Clique em <b>Baixar extensão (.zip)</b> no topo desta página.</p>
-          <p>Assim que o download terminar no navegador, clique no ícone de pasta (<b>Mostrar na pasta</b>) para abrir o local do arquivo.</p>
-          <div class="tut-tip">O pacote já inclui o <code class="mono-tag">manifest.json</code> na raiz, os manuais e a pasta <code class="mono-tag">skill-ia/</code>.</div>
-        `
+        desc: 'Clique em <b>Baixar extensão</b> no topo do site e depois no ícone <b>Mostrar na pasta</b>.'
       },
       {
         title: '02 — Localize o arquivo em Downloads',
         img: 'assets/tutorial/inst-02-localizar.png',
         alt: 'Arquivo zip inss-extractor-by-fonck localizado dentro da pasta Downloads do Windows',
-        caption: 'Encontre o arquivo compactado na pasta Downloads (ou mova para Documentos).',
-        body: `
-          <p>Na pasta <b>Downloads</b>, localize o arquivo compactado <code class="mono-tag">inss-extractor-by-fonck</code>.</p>
-          <div class="tut-tip"><b>Dica:</b> se quiser evitar apagar sem querer no futuro, mova a pasta extraída para um local fixo como <code class="mono-tag">Documentos</code>.</div>
-        `
+        desc: 'Encontre <code class="mono-tag">inss-extractor-by-fonck</code> na pasta Downloads (ou mova para Documentos).'
       },
       {
         title: '03 — Extraia o arquivo compactado',
         img: 'assets/tutorial/inst-03-extrair.png',
         alt: 'Menu de contexto do Windows mostrando Extrair Tudo e WinRAR Extrair para pasta',
-        caption: 'Clique com o botão direito e escolha "Extrair Tudo..." (Windows) ou WinRAR.',
-        body: `
-          <p>Clique com o <b>botão direito</b> sobre o arquivo <code class="mono-tag">.zip</code> e escolha <b>Extrair Tudo...</b> (nativo do Windows) ou <b>WinRAR → Extrair para "inss-extractor-by-fonck..."</b>.</p>
-          <p>No Mac, basta clicar duas vezes sobre o <code class="mono-tag">.zip</code> para descompactar.</p>
-        `
+        desc: 'Clique com o botão direito no <code class="mono-tag">.zip</code> e escolha <b>Extrair Tudo...</b> (no Mac, clique duas vezes).'
       },
       {
-        title: '04 — Confira a pasta extraída',
+        title: '04 — Confira a pasta descompactada',
         img: 'assets/tutorial/inst-04-pasta.png',
         alt: 'Pasta de arquivos comum criada ao lado da pasta compactada',
-        caption: 'Confirme que a "Pasta de arquivos" descompactada foi criada ao lado do .zip.',
-        body: `
-          <p>Verifique se a <b>Pasta de arquivos</b> comum foi criada logo acima do arquivo compactado.</p>
-          <p>É essa pasta descompactada (onde <code class="mono-tag">manifest.json</code> aparece logo no primeiro nível) que você vai selecionar no navegador.</p>
-        `
+        desc: 'Confirme que a pasta comum (com <code class="mono-tag">manifest.json</code> na raiz) foi criada ao lado do <code class="mono-tag">.zip</code>.'
       },
       {
         title: '05 — Ative o Modo do desenvolvedor',
         img: 'assets/tutorial/inst-05-devmode.png',
         alt: 'Página chrome://extensions com a chave Modo do desenvolvedor ativada no canto superior direito',
-        caption: 'Acesse chrome://extensions (ou edge://extensions) e ative o Modo do desenvolvedor.',
-        body: `
-          <p>Digite <code class="mono-tag">chrome://extensions</code> na barra de endereço do Chrome (ou <code class="mono-tag">edge://extensions</code> no Edge) e pressione <b>Enter</b>.</p>
-          <p>Ative a chave <b>Modo do desenvolvedor</b> no canto superior direito.</p>
-        `
+        desc: 'Acesse <code class="mono-tag">chrome://extensions</code> (ou <code class="mono-tag">edge://extensions</code>) e ligue <b>Modo do desenvolvedor</b>.'
       },
       {
         title: '06 — Carregue sem compactação',
         img: 'assets/tutorial/inst-06-carregar.png',
         alt: 'Botão Carregar sem compactação em destaque no topo de chrome://extensions',
-        caption: 'Clique em "Carregar sem compactação" (Chrome) ou "Carregar sem pacote" (Edge).',
-        body: `
-          <p>Com o Modo do desenvolvedor ligado, surgirá a barra de opções no topo esquerdo.</p>
-          <p>Clique em <b>Carregar sem compactação</b> (no Microsoft Edge o botão chama-se <b>Carregar sem pacote</b>).</p>
-        `
+        desc: 'Clique em <b>Carregar sem compactação</b> no Chrome (ou <b>Carregar sem pacote</b> no Edge).'
       },
       {
         title: '07 — Selecione a pasta da extensão',
         img: 'assets/tutorial/inst-07-selecionar.png',
         alt: 'Janela do Windows para selecionar o diretório descompactado da extensão',
-        caption: 'Escolha a pasta descompactada e clique em "Selecionar pasta".',
-        body: `
-          <p>Na janela aberta, clique na pasta descompactada <code class="mono-tag">inss-extractor-by-fonck</code> e aperte <b>Selecionar pasta</b>.</p>
-          <div class="tut-tip">Assim que carregar, a página de boas-vindas da extensão abrirá automaticamente. Não apague nem mova esta pasta depois de instalada.</div>
-        `
+        desc: 'Escolha a pasta descompactada e clique em <b>Selecionar pasta</b> (não apague esta pasta depois).'
       },
       {
-        title: '08 — Fixe o ícone na barra do navegador',
+        title: '08 — Fixe o ícone na barra',
         img: 'assets/tutorial/inst-08-barra.png',
         alt: 'Ícone oficial INSS Extractor by FonCK fixado na barra superior do Chrome ao lado do ícone de extensões',
-        caption: 'Fixe o ícone oficial na barra para abrir o guia e o painel rapidamente.',
-        body: `
-          <p>Clique no ícone de <b>quebra-cabeça (Extensões)</b> no canto superior direito do navegador e marque o <b>alfinete (Fixar)</b> ao lado de <b>INSS Extractor by FonCK</b>.</p>
-          <p>O ícone oficial ficará sempre visível para acesso em 1 clique.</p>
-        `
+        desc: 'Clique no ícone de <b>Extensões</b> (quebra-cabeça) e marque o alfinete para fixar o ícone oficial.'
       },
       {
-        title: '09 — Dica: desligue "Perguntar onde salvar"',
+        title: '09 — Desligue "Perguntar onde salvar"',
         img: 'assets/tutorial/inst-09-downloads.png',
         alt: 'Tela chrome://settings/downloads destacando a opção Perguntar onde salvar cada arquivo desativada',
-        caption: 'Desligue a confirmação por arquivo em chrome://settings/downloads para baixar em lote.',
-        body: `
-          <p>Abra <code class="mono-tag">chrome://settings/downloads</code> (ou <code class="mono-tag">edge://settings/downloads</code>).</p>
-          <p><b>Desative</b> a opção <b>"Perguntar onde salvar cada arquivo antes de fazer download"</b> — assim o navegador não abre uma janela de confirmação para cada PDF do lote.</p>
-          <div class="tut-tip">Instalação concluída! Avance para ver o tutorial de <b>Como usar</b> no Meu INSS.</div>
-        `
+        desc: 'Em <code class="mono-tag">chrome://settings/downloads</code>, desative a confirmação por arquivo para baixar lotes sem interrupções.'
       }
     ]
   },
   usar: {
-    label: 'Uso no Meu INSS · v2.4.0',
     slides: [
       {
         title: '01 — Acesse o Meu INSS',
         img: 'assets/tutorial/uso-01-login.png',
         alt: 'Página inicial do Meu INSS com o botão Entrar com gov.br',
-        caption: 'Entre em meu.inss.gov.br e faça login normalmente com a conta gov.br autorizada.',
-        body: `
-          <p>Após concluir a instalação da extensão no navegador, acesse <code class="mono-tag">meu.inss.gov.br</code> e clique em <b>Entrar com gov.br</b>.</p>
-          <p>Realize o login normalmente na conta que você está autorizado a consultar — a extensão nunca pede nem armazena senhas.</p>
-        `
+        desc: 'Entre em <code class="mono-tag">meu.inss.gov.br</code> e faça login na conta <b>gov.br</b> autorizada — a extensão nunca pede senhas.'
       },
       {
         title: '02 — Abra o INSS Extractor',
         img: 'assets/tutorial/uso-02-meu-inss.png',
         alt: 'Tela inicial do Meu INSS censurada com o botão flutuante INSS Extractor destacado no canto inferior direito',
-        caption: 'Clique no botão flutuante INSS Extractor no canto inferior direito do Meu INSS.',
-        body: `
-          <p>Após acessar a página inicial do Meu INSS, a extensão identificará automaticamente o benefício e os contratos vinculados.</p>
-          <p>Clique no botão <b>INSS Extractor</b>, localizado no canto inferior direito da tela.</p>
-        `
+        desc: 'O benefício e os contratos são detectados automaticamente. Clique no botão <b>INSS Extractor</b> no canto inferior direito.'
       },
       {
-        title: '03 — Configure a extração',
+        title: '03 — Configure os documentos',
         img: 'assets/tutorial/uso-03-configurar.png',
-        alt: 'Painel v2.2.0 do INSS Extractor by FonCK mostrando opções de documentos e dados censurados de demonstração',
-        caption: 'Confira o nome da pasta, o NB detectado e marque os documentos desejados.',
-        body: `
-          <p>Confira o nome da pasta do cliente, selecione o <b>número do benefício (NB)</b> e escolha os documentos que deseja extrair:</p>
-          <table class="tut-table" aria-label="Opções de extração">
-            <thead><tr><th>Opção</th><th>Finalidade</th></tr></thead>
-            <tbody>
-              <tr><td>Contrato (PDF)</td><td>Baixar os contratos disponíveis já renomeados.</td></tr>
-              <tr><td>Biometria facial</td><td>Extrair registros de biometria disponíveis.</td></tr>
-              <tr><td>Documento oficial</td><td>Baixar documentos oficiais (frente e verso).</td></tr>
-              <tr><td>Planilha resumo</td><td>Consolidar informações em planilhas Excel PT-BR.</td></tr>
-              <tr><td>CONTRATOS-PENDENTES.txt</td><td>Lista única agrupada por banco dos contratos sem cópia.</td></tr>
-              <tr><td>PDF geral Consignado</td><td>Incluir o extrato geral de empréstimos consignados.</td></tr>
-            </tbody>
-          </table>
+        alt: 'Painel do INSS Extractor by FonCK mostrando opções de documentos e dados censurados de demonstração',
+        desc: 'Confira a pasta do cliente, o NB selecionado e marque o que deseja extrair no lote:',
+        extra: `
+          <span class="gal-chip">Contrato (PDF)</span>
+          <span class="gal-chip">Biometria facial</span>
+          <span class="gal-chip">Documento oficial</span>
+          <span class="gal-chip">Planilha resumo</span>
+          <span class="gal-chip gal-chip--accent">CONTRATOS-PENDENTES.txt</span>
         `
       },
       {
-        title: '04 — Inicie o download',
+        title: '04 — Inicie o download em 1 clique',
         img: 'assets/tutorial/uso-04-download.png',
         alt: 'Painel do INSS Extractor by FonCK baixando lote de contratos com barra de progresso e selos Salvo',
-        caption: 'Escolha entre baixar apenas os contratos ou o lote completo com extrato HISCRE.',
-        body: `
-          <p>A ferramenta oferece duas opções de extração — acompanhe todo o andamento pelo próprio painel:</p>
-          <div class="tut-mode-list">
-            <div class="tut-mode-card is-hl">
-              <strong>Baixar contratos</strong>
-              <span>Baixa os contratos (Empréstimos, RMC e RCC) e os documentos selecionados anteriormente.</span>
-            </div>
-            <div class="tut-mode-card">
-              <strong>Baixar contratos e extrato de pagamento</strong>
-              <span>Realiza a extração combinada dos contratos e do extrato HISCRE completo desde 06/1994.</span>
-            </div>
-          </div>
-        `
+        desc: 'Escolha entre <b>Baixar contratos</b> ou <b>Baixar contratos e extrato de pagamento</b> (HISCRE completo desde 06/1994) e acompanhe ao vivo.'
       },
       {
-        title: '05 — Localize os arquivos',
+        title: '05 — Abra a pasta já organizada',
         img: 'assets/tutorial/uso-05-arquivos.png',
         alt: 'Estrutura organizada em Downloads/Contratos INSS/Gabriel Fonseca com pastas de Empréstimos, RMC, RCC, HISCRE e planilhas CSV',
-        caption: 'Abra Downloads/Contratos INSS/ para encontrar todas as pastas prontas e sem duplicatas.',
-        body: `
-          <p>Após a conclusão, abra a pasta <b>Downloads</b>. O INSS Extractor organiza tudo automaticamente pelo nome do cliente:</p>
-          <div class="tut-crumbs" aria-label="Caminho da pasta final">
-            <span>Downloads</span><span class="sep">›</span>
-            <span>Contratos INSS</span><span class="sep">›</span>
-            <span class="hi">Gabriel Fonseca</span><span class="sep">›</span>
-            <span>Documentos extraídos</span>
-          </div>
-          <span class="tut-demo-note">Nome utilizado exclusivamente para demonstração.</span>
-          <div class="tut-sec-box">
-            <strong>Recomendações de segurança</strong>
-            <ul>
-              <li>Utilize a ferramenta somente em contas cuja consulta esteja autorizada.</li>
-              <li>Preserve a confidencialidade dos documentos extraídos.</li>
-              <li>Confira se todos os documentos desejados foram baixados antes de encerrar a sessão.</li>
-            </ul>
-          </div>
+        desc: 'Todos os PDFs, planilhas e a lista de pendentes ficam prontos por cliente — use somente em contas autorizadas e preserve o sigilo.',
+        extra: `
+          <span class="gal-crumb">Downloads › Contratos INSS › <b>Gabriel Fonseca (demo)</b> › Documentos extraídos</span>
         `
       }
     ]
   }
 };
 
-let activeDeckKey = 'instalar';
-let activeSlideIdx = 0;
+const galleryState = { instalar: 0, usar: 0 };
+let lbDeckKey = 'instalar';
 
-const deckTabGroup = document.querySelector('[data-tab-group="tutorial-deck"]');
-const tutProgressFill = document.getElementById('tut-progress-fill');
-const tutStepCounter = document.getElementById('tut-step-counter');
-const tutDeckLabel = document.getElementById('tut-deck-label');
-const tutSlideTitle = document.getElementById('tut-slide-title');
-const tutSlideBody = document.getElementById('tut-slide-body');
-const tutPanelTop = document.querySelector('.tut-panel-top');
-const tutSlideImg = document.getElementById('tut-slide-img');
-const tutSlideCaption = document.getElementById('tut-slide-caption');
-const tutDotsEl = document.getElementById('tut-dots');
-const tutPrevBtn = document.getElementById('tut-prev');
-const tutNextBtn = document.getElementById('tut-next');
-const tutNextLbl = document.getElementById('tut-next-lbl');
-const tutViewport = document.getElementById('tut-viewport');
-const tutZoomTrigger = document.getElementById('tut-zoom-trigger');
-
-// Lightbox elements
 const lightbox = document.getElementById('tut-lightbox');
 const lbImg = document.getElementById('lb-img');
 const lbTitle = document.getElementById('lb-title');
@@ -700,188 +600,123 @@ function pad2(n) {
   return String(n).padStart(2, '0');
 }
 
+function stripTags(html) {
+  return String(html || '').replace(/<[^>]+>/g, '');
+}
+
 function syncLightbox() {
   if (!lightbox || !lightbox.classList.contains('open')) return;
-  const deck = tutorialDecks[activeDeckKey];
-  const slide = deck.slides[activeSlideIdx];
+  const deck = galleryDecks[lbDeckKey];
+  const idx = galleryState[lbDeckKey] || 0;
+  const slide = deck.slides[idx];
   const total = deck.slides.length;
   if (lbImg) {
     lbImg.src = slide.img;
     lbImg.alt = slide.alt;
   }
   if (lbTitle) lbTitle.textContent = slide.title;
-  if (lbCounter) lbCounter.textContent = `${pad2(activeSlideIdx + 1)} / ${pad2(total)}`;
-  if (lbCaption) lbCaption.textContent = slide.caption;
-  if (lbPrev) lbPrev.disabled = activeSlideIdx === 0;
-  if (lbNext) lbNext.disabled = activeSlideIdx === total - 1;
+  if (lbCounter) lbCounter.textContent = `${pad2(idx + 1)} / ${pad2(total)}`;
+  if (lbCaption) lbCaption.textContent = stripTags(slide.desc);
+  if (lbPrev) lbPrev.disabled = idx === 0;
+  if (lbNext) lbNext.disabled = idx === total - 1;
 }
 
-function renderTutorialSlide(direction = 'next') {
-  const deck = tutorialDecks[activeDeckKey] || tutorialDecks.instalar;
+function renderGallery(key, direction = 'next') {
+  const deck = galleryDecks[key];
+  if (!deck) return;
   const total = deck.slides.length;
-  activeSlideIdx = Math.max(0, Math.min(total - 1, activeSlideIdx));
-  const slide = deck.slides[activeSlideIdx];
+  const idx = Math.max(0, Math.min(total - 1, galleryState[key] || 0));
+  galleryState[key] = idx;
+  const slide = deck.slides[idx];
 
-  if (tutProgressFill) {
-    tutProgressFill.style.transform = `scaleX(${(activeSlideIdx + 1) / total})`;
+  const counterEl = document.querySelector(`[data-gal-counter="${key}"]`);
+  const imgEl = document.querySelector(`[data-gal-img="${key}"]`);
+  const copyEl = document.querySelector(`[data-gal-copy="${key}"]`);
+  const titleEl = document.querySelector(`[data-gal-title="${key}"]`);
+  const descEl = document.querySelector(`[data-gal-desc="${key}"]`);
+  const extraEl = document.querySelector(`[data-gal-extra="${key}"]`);
+  const dotsEl = document.querySelector(`[data-gal-dots="${key}"]`);
+
+  if (counterEl) counterEl.textContent = `${pad2(idx + 1)} / ${pad2(total)}`;
+  if (titleEl) titleEl.textContent = slide.title;
+  if (descEl) descEl.innerHTML = slide.desc;
+  if (extraEl) extraEl.innerHTML = slide.extra || '';
+
+  if (copyEl && !prefersReducedMotion) {
+    copyEl.classList.remove('anim-fade');
+    void copyEl.offsetWidth;
+    copyEl.classList.add('anim-fade');
   }
-  if (tutStepCounter) tutStepCounter.textContent = `${pad2(activeSlideIdx + 1)} / ${pad2(total)}`;
-  if (tutDeckLabel) tutDeckLabel.textContent = deck.label;
-  if (tutSlideTitle) tutSlideTitle.textContent = slide.title;
-  if (tutSlideBody) tutSlideBody.innerHTML = slide.body;
-  if (tutSlideCaption) tutSlideCaption.textContent = slide.caption;
 
-  if (tutPanelTop && !prefersReducedMotion) {
-    tutPanelTop.classList.remove('anim-fade');
-    void tutPanelTop.offsetWidth;
-    tutPanelTop.classList.add('anim-fade');
-  }
-
-  if (tutSlideImg) {
-    tutSlideImg.src = slide.img;
-    tutSlideImg.alt = slide.alt;
+  if (imgEl) {
+    imgEl.src = slide.img;
+    imgEl.alt = slide.alt;
     if (!prefersReducedMotion) {
-      tutSlideImg.classList.remove('anim-next', 'anim-prev');
-      void tutSlideImg.offsetWidth;
-      tutSlideImg.classList.add(direction === 'prev' ? 'anim-prev' : 'anim-next');
+      imgEl.classList.remove('anim-next', 'anim-prev');
+      void imgEl.offsetWidth;
+      imgEl.classList.add(direction === 'prev' ? 'anim-prev' : 'anim-next');
     }
   }
 
-  // Preload adjacent slide image for instantaneous next/prev flip
-  if (deck.slides[activeSlideIdx + 1]) {
+  // Preload next slide for instant transitions
+  if (deck.slides[idx + 1]) {
     const preload = new Image();
-    preload.src = deck.slides[activeSlideIdx + 1].img;
+    preload.src = deck.slides[idx + 1].img;
   }
 
-  if (tutPrevBtn) tutPrevBtn.disabled = activeSlideIdx === 0;
-  if (tutNextBtn && tutNextLbl) {
-    const isLast = activeSlideIdx === total - 1;
-    if (isLast && activeDeckKey === 'instalar') {
-      tutNextBtn.disabled = false;
-      tutNextLbl.textContent = 'Ir para Como usar';
-    } else if (isLast && activeDeckKey === 'usar') {
-      tutNextBtn.disabled = false;
-      tutNextLbl.textContent = 'Reiniciar slides';
-    } else {
-      tutNextBtn.disabled = false;
-      tutNextLbl.textContent = 'Próximo';
-    }
-  }
+  document.querySelectorAll(`[data-gal-prev="${key}"]`).forEach((b) => {
+    b.disabled = idx === 0;
+  });
+  document.querySelectorAll(`[data-gal-next="${key}"]`).forEach((b) => {
+    b.disabled = idx === total - 1;
+  });
 
-  if (tutDotsEl) {
-    tutDotsEl.innerHTML = deck.slides
+  if (dotsEl) {
+    dotsEl.innerHTML = deck.slides
       .map(
-        (s, idx) =>
-          `<button class="tut-dot" role="tab" aria-selected="${idx === activeSlideIdx}" data-go-slide="${idx}" title="${s.title}" type="button">${pad2(idx + 1)}</button>`
+        (s, i) =>
+          `<button class="gal-dot" role="tab" aria-selected="${i === idx}" aria-label="${s.title}" data-gal-go="${i}" type="button"></button>`
       )
       .join('');
-    tutDotsEl.querySelectorAll('[data-go-slide]').forEach((dot) => {
+    dotsEl.querySelectorAll('[data-gal-go]').forEach((dot) => {
       dot.addEventListener('click', () => {
-        const nextIdx = Number(dot.getAttribute('data-go-slide')) || 0;
-        const dir = nextIdx < activeSlideIdx ? 'prev' : 'next';
-        activeSlideIdx = nextIdx;
-        renderTutorialSlide(dir);
+        const target = Number(dot.getAttribute('data-gal-go')) || 0;
+        const dir = target < galleryState[key] ? 'prev' : 'next';
+        galleryState[key] = target;
+        renderGallery(key, dir);
       });
     });
   }
 
-  syncLightbox();
+  if (lbDeckKey === key) syncLightbox();
 }
 
-function selectTutorialDeck(key, slideIndex = 0) {
-  if (!tutorialDecks[key]) return;
-  activeDeckKey = key;
-  activeSlideIdx = slideIndex;
-  if (deckTabGroup) {
-    deckTabGroup.querySelectorAll('.sliding-tab').forEach((tab) => {
-      tab.setAttribute('aria-selected', String(tab.getAttribute('data-deck') === key));
-    });
-    positionPill(deckTabGroup);
-  }
-  renderTutorialSlide('next');
+function stepGallery(key, delta) {
+  const deck = galleryDecks[key];
+  if (!deck) return;
+  const next = (galleryState[key] || 0) + delta;
+  if (next < 0 || next >= deck.slides.length) return;
+  galleryState[key] = next;
+  renderGallery(key, delta < 0 ? 'prev' : 'next');
 }
 
-function stepTutorial(delta) {
-  const deck = tutorialDecks[activeDeckKey];
-  const total = deck.slides.length;
-  if (delta > 0 && activeSlideIdx === total - 1) {
-    if (activeDeckKey === 'instalar') {
-      selectTutorialDeck('usar', 0);
-    } else {
-      activeSlideIdx = 0;
-      renderTutorialSlide('next');
-    }
-    return;
-  }
-  if (delta < 0 && activeSlideIdx === 0) return;
-  activeSlideIdx += delta;
-  renderTutorialSlide(delta < 0 ? 'prev' : 'next');
-}
-
-if (deckTabGroup) {
-  deckTabGroup.querySelectorAll('.sliding-tab').forEach((tab) => {
-    tab.addEventListener('click', () => selectTutorialDeck(tab.getAttribute('data-deck'), 0));
-  });
-}
-if (tutPrevBtn) tutPrevBtn.addEventListener('click', () => stepTutorial(-1));
-if (tutNextBtn) tutNextBtn.addEventListener('click', () => stepTutorial(1));
-
-// Deep links (#instalar / #usar and mobile sheet shortcuts)
-document.querySelectorAll('[data-open-deck]').forEach((lnk) => {
-  lnk.addEventListener('click', () => {
-    selectTutorialDeck(lnk.getAttribute('data-open-deck'), 0);
-  });
-});
-
-function syncHashDeck() {
-  const h = window.location.hash.replace('#', '');
-  if (h === 'usar') selectTutorialDeck('usar', 0);
-  else if (h === 'instalar') selectTutorialDeck('instalar', 0);
-}
-window.addEventListener('hashchange', syncHashDeck);
-
-// Lightbox Open / Close
-function openLightbox() {
+function openLightbox(key) {
   if (!lightbox) return;
+  lbDeckKey = key;
   lightbox.classList.add('open');
   lightbox.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
   syncLightbox();
 }
+
 function closeLightbox() {
   if (!lightbox) return;
   lightbox.classList.remove('open');
   lightbox.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
 }
-if (tutZoomTrigger) tutZoomTrigger.addEventListener('click', openLightbox);
-if (lightbox) {
-  lightbox.querySelectorAll('[data-lb-close]').forEach((el) => el.addEventListener('click', closeLightbox));
-}
-if (lbPrev) lbPrev.addEventListener('click', () => stepTutorial(-1));
-if (lbNext) lbNext.addEventListener('click', () => stepTutorial(1));
 
-// Keyboard arrows (when Lightbox is open or Tutorial stage is in view)
-window.addEventListener('keydown', (e) => {
-  if (lightbox && lightbox.classList.contains('open')) {
-    if (e.key === 'Escape') closeLightbox();
-    else if (e.key === 'ArrowRight') stepTutorial(1);
-    else if (e.key === 'ArrowLeft') stepTutorial(-1);
-    return;
-  }
-  const tag = (document.activeElement && document.activeElement.tagName) || '';
-  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-  const tutSec = document.getElementById('tutoriais');
-  if (!tutSec) return;
-  const rect = tutSec.getBoundingClientRect();
-  const inView = rect.top < window.innerHeight * 0.7 && rect.bottom > window.innerHeight * 0.25;
-  if (inView && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
-    stepTutorial(e.key === 'ArrowRight' ? 1 : -1);
-  }
-});
-
-// Touch Swipe Gestures (Viewport & Lightbox)
-function attachSwipe(el) {
+function attachSwipe(el, onSwipe) {
   if (!el) return;
   let startX = 0;
   let startY = 0;
@@ -901,17 +736,55 @@ function attachSwipe(el) {
       const dx = e.changedTouches[0].clientX - startX;
       const dy = e.changedTouches[0].clientY - startY;
       if (Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy) * 1.2) {
-        stepTutorial(dx < 0 ? 1 : -1);
+        onSwipe(dx < 0 ? 1 : -1);
       }
     },
     { passive: true }
   );
 }
-attachSwipe(tutViewport);
-attachSwipe(lightbox);
 
-// Initial render
-selectTutorialDeck(window.location.hash === '#usar' ? 'usar' : 'instalar', 0);
+['instalar', 'usar'].forEach((key) => {
+  document.querySelectorAll(`[data-gal-prev="${key}"]`).forEach((b) =>
+    b.addEventListener('click', () => stepGallery(key, -1))
+  );
+  document.querySelectorAll(`[data-gal-next="${key}"]`).forEach((b) =>
+    b.addEventListener('click', () => stepGallery(key, 1))
+  );
+  const zoomBtn = document.querySelector(`[data-gal-zoom="${key}"]`);
+  if (zoomBtn) zoomBtn.addEventListener('click', () => openLightbox(key));
+  const stageEl = document.querySelector(`[data-gal-stage="${key}"]`);
+  attachSwipe(stageEl, (delta) => stepGallery(key, delta));
+  renderGallery(key, 'next');
+});
+
+if (lightbox) {
+  lightbox.querySelectorAll('[data-lb-close]').forEach((el) => el.addEventListener('click', closeLightbox));
+  attachSwipe(lightbox, (delta) => stepGallery(lbDeckKey, delta));
+}
+if (lbPrev) lbPrev.addEventListener('click', () => stepGallery(lbDeckKey, -1));
+if (lbNext) lbNext.addEventListener('click', () => stepGallery(lbDeckKey, 1));
+
+// Keyboard arrows (Lightbox or whichever gallery section is in view)
+window.addEventListener('keydown', (e) => {
+  if (lightbox && lightbox.classList.contains('open')) {
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === 'ArrowRight') stepGallery(lbDeckKey, 1);
+    else if (e.key === 'ArrowLeft') stepGallery(lbDeckKey, -1);
+    return;
+  }
+  const tag = (document.activeElement && document.activeElement.tagName) || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+  for (const key of ['instalar', 'usar']) {
+    const sec = document.getElementById(key);
+    if (!sec) continue;
+    const rect = sec.getBoundingClientRect();
+    if (rect.top < window.innerHeight * 0.65 && rect.bottom > window.innerHeight * 0.3) {
+      stepGallery(key, e.key === 'ArrowRight' ? 1 : -1);
+      break;
+    }
+  }
+});
 
 // ── 8. Interactive MIT + AI Office Personalization Prompt Builder ────────────
 const mitCatalog = {
@@ -987,7 +860,7 @@ const progressBar = document.getElementById('scroll-progress');
 const heroFrame = document.getElementById('hero-app-frame');
 const navLinks = Array.from(document.querySelectorAll('.nav-link'));
 const navEl = document.querySelector('.nav');
-const trackedSections = ['tutoriais', 'impacto', 'ia', 'personalizar', 'seguranca', 'consultoria']
+const trackedSections = ['impacto', 'instalar', 'usar', 'ia', 'personalizar', 'seguranca', 'consultoria']
   .map((id) => ({ id, el: document.getElementById(id) }))
   .filter((item) => item.el);
 const scrollStatement = document.querySelector('[data-scroll-words]');
@@ -1170,8 +1043,9 @@ document.querySelectorAll('[data-dl-ext]').forEach((lnk) => {
       actionLabel: 'Ver slides →',
       duration: 5200,
       onAction: () => {
-        selectTutorialDeck('instalar', 0);
-        const sec = document.getElementById('tutoriais');
+        galleryState.instalar = 0;
+        renderGallery('instalar', 'next');
+        const sec = document.getElementById('instalar');
         if (sec) sec.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
       }
     });
@@ -1461,8 +1335,9 @@ const cmdkCommands = [
     keys: 'instalar tutorial slides extensoes chrome edge',
     icon: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
     run: () => {
-      selectTutorialDeck('instalar', 0);
-      const sec = document.getElementById('tutoriais');
+      galleryState.instalar = 0;
+      renderGallery('instalar', 'next');
+      const sec = document.getElementById('instalar');
       if (sec) sec.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
     }
   },
@@ -1474,8 +1349,9 @@ const cmdkCommands = [
     keys: 'usar uso tutorial slides meu inss contratos hiscre',
     icon: '<svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
     run: () => {
-      selectTutorialDeck('usar', 0);
-      const sec = document.getElementById('tutoriais');
+      galleryState.usar = 0;
+      renderGallery('usar', 'next');
+      const sec = document.getElementById('usar');
       if (sec) sec.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth' });
     }
   },
